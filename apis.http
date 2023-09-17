@@ -1,0 +1,9 @@
+POST https://localhost:7062/api/account/Register HTTP/1.1
+content-type: application/json
+
+{
+    "userName": "test",
+    "password": "test"
+}
+
+###
