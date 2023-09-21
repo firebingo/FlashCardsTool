@@ -1,7 +1,8 @@
 ﻿using FlashCards.Server.Configuration;
 using FlashCards.Server.Data;
-using FlashCards.Server.Models;
-using FlashCards.Server.Models.Auth;
+using FlashCards.Server.Data.Models;
+using FlashCards.Shared.Models;
+using FlashCards.Shared.Models.Auth;
 using FlashCards.Shared.Util;
 using IdGen;
 using Microsoft.EntityFrameworkCore;
@@ -76,7 +77,8 @@ namespace FlashCards.Server.Services
 					};
 				}
 
-				var exists = await _dbContext.Users.AnyAsync(x => x.UserName == request.UserName);
+				var exists = await _dbContext.Users.AnyAsync(x => x.UserName == request.UserName)
+					|| (!string.IsNullOrWhiteSpace(request.Email) && await _dbContext.Users.AnyAsync(x => x.Email == request.Email));
 				if (exists)
 				{
 					return new StandardResponse()
@@ -95,6 +97,7 @@ namespace FlashCards.Server.Services
 					UserName = request.UserName,
 					Password = HashUtil.HashPassword(request.Password, salt),
 					Salt = salt,
+					Disabled = false,
 					RequiresNewPassword = false,
 					CreatedTime = DateTime.UtcNow,
 					ModifiedTime = DateTime.UtcNow

@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FlashCards.Server.Data
+namespace FlashCards.Server.Data.Models
 {
 	public class User
 	{
@@ -19,9 +20,13 @@ namespace FlashCards.Server.Data
 		public bool RequiresNewPassword { get; set; }
 		[Column("salt")]
 		public uint Salt { get; set; } = 0;
+		[Column("disabled")]
+		public bool Disabled { get; set; } = false;
 		[Column("createdTime")]
 		public DateTime CreatedTime { get; set; } = DateTime.MinValue;
 		[Column("modifiedTime")]
 		public DateTime ModifiedTime { get; set; } = DateTime.MinValue;
+
+		public virtual ICollection<CardSet>? CardSets { get; set; }
 	}
 }

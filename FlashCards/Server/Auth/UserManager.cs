@@ -1,12 +1,12 @@
-﻿using FlashCards.Server.Configuration;
-using FlashCards.Server.Data;
-using FlashCards.Server.Models.Auth;
+﻿using FlashCards.Server.Data;
+using FlashCards.Server.Data.Models;
+using FlashCards.Shared.Models.Auth;
 using FlashCards.Shared.Util;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -17,20 +17,18 @@ namespace FlashCards.Server.Auth
 {
 	public class UserManager
 	{
-		readonly AppSettings _appSettings;
 		readonly ServiceDbContext _dbContext;
 
-		public UserManager(IOptions<AppSettings> appSettings, ServiceDbContext dbContext)
+		public UserManager(ServiceDbContext dbContext)
 		{
 			_dbContext = dbContext;
-			_appSettings = appSettings.Value;
 		}
 
 		public async Task<bool> SignIn(HttpContext httpContext, LoginRequest user)
 		{
 			var dbUser = (await _dbContext.Users.Where(x => (x.UserName == user.UserName || x.Email == user.Email)).ToListAsync()).FirstOrDefault();
 
-			if (dbUser == null)
+			if (dbUser?.Disabled ?? true)
 			{
 				await httpContext.ChallengeAsync();
 				return false;
@@ -46,7 +44,12 @@ namespace FlashCards.Server.Auth
 			ClaimsIdentity identity = new ClaimsIdentity(GetUserClaims(dbUser), CookieAuthenticationDefaults.AuthenticationScheme);
 			ClaimsPrincipal principal = new ClaimsPrincipal(identity);
 
-			await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+			await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties()
+			{
+				ExpiresUtc = DateTime.UtcNow.AddDays(3),
+				IsPersistent = true,
+				AllowRefresh = true
+			});
 			return true;
 		}
 
@@ -61,7 +64,7 @@ namespace FlashCards.Server.Auth
 			{
 				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 				new Claim(ClaimTypes.Name, user.UserName),
-				new Claim(ClaimTypes.Email, user.Email)
+				new Claim(ClaimTypes.Email, user.Email ?? string.Empty)
 			};
 			claims.AddRange(GetUserRoleClaims(user));
 			return claims;

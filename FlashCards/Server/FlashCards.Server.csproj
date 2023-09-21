@@ -33,6 +33,7 @@
 
 	<ItemGroup>
 		<Folder Include="Data\Scripts\SQLLite\" />
+		<Folder Include="Models\" />
 	</ItemGroup>
 
 

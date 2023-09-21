@@ -1,4 +1,4 @@
-﻿namespace FlashCards.Server.Models.Auth
+﻿namespace FlashCards.Shared.Models.Auth
 {
 	public class RegisterRequest
 	{

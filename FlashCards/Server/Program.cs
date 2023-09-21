@@ -1,3 +1,4 @@
+using FlashCards.Server.Auth;
 using FlashCards.Server.Configuration;
 using FlashCards.Server.Data;
 using FlashCards.Server.Services;
@@ -58,6 +59,8 @@ namespace FlashCards
 					options.LogoutPath = "/Logout";
 					options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
 					options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+					options.EventsType = typeof(CookieAuthEvents);
+					options.SlidingExpiration = true;
 				});
 			builder.Services.AddAuthentication(options =>
 			{
@@ -77,8 +80,10 @@ namespace FlashCards
 			else if (settings.DbSettings.Type == DbSettingsType.SqlLite)
 				builder.Services.AddDbContext<ServiceDbContext>(options => options.UseSqlite(settings.DbSettings.FullConnectionString));
 
-			builder.Services.AddTransient<Server.Auth.UserManager>();
+			builder.Services.AddTransient<UserManager>();
 			builder.Services.AddScoped<AccountService>();
+			builder.Services.AddScoped<CardService>();
+			builder.Services.AddScoped<CookieAuthEvents>();
 
 			var app = builder.Build();
 
@@ -126,6 +131,8 @@ namespace FlashCards
 			app.UseStaticFiles();
 
 			app.UseRouting();
+
+			app.UseAuthorization();
 
 			app.MapRazorPages();
 			app.MapControllers();

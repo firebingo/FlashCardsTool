@@ -1,7 +1,7 @@
 ﻿using FlashCards.Server.Auth;
-using FlashCards.Server.Models;
-using FlashCards.Server.Models.Auth;
 using FlashCards.Server.Services;
+using FlashCards.Shared.Models;
+using FlashCards.Shared.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

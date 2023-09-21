@@ -3,7 +3,66 @@ content-type: application/json
 
 {
     "userName": "test",
+    "email": "test@test.com",
     "password": "test"
 }
 
 ###
+
+POST https://localhost:7062/api/account/Login HTTP/1.1
+content-type: application/json
+
+{
+    "userName": "test",
+    "password": "test"
+}
+
+###
+
+PUT https://localhost:7062/api/card/CreateCardSet HTTP/1.1
+content-type: application/json
+
+{
+    "name": "testset"
+}
+
+###
+
+GET https://localhost:7062/api/card/GetCardSets HTTP/1.1
+
+###
+
+PATCH https://localhost:7062/api/card/EditCardSet HTTP/1.1
+content-type: application/json
+
+{
+    "setId": 1,
+    "name": "testsetedit"
+}
+
+###
+
+PUT https://localhost:7062/api/card/CreateCards HTTP/1.1
+content-type: application/json
+
+{
+    "setId": 1,
+    "cards": [
+        {
+            "frontValue": "front1",
+            "backValue": "back1"
+        },
+        {
+            "frontValue": null,
+            "backValue": null
+        },
+        {
+            "frontValue": "front3",
+            "backValue": "back3"
+        }
+    ]
+}
+
+###
+
+GET https://localhost:7062/api/card/GetCardsForSet/1 HTTP/1.1

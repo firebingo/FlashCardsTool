@@ -1,0 +1,256 @@
+﻿using FlashCards.Server.Configuration;
+using FlashCards.Server.Data;
+using FlashCards.Server.Data.Models;
+using FlashCards.Shared.Models;
+using FlashCards.Shared.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+namespace FlashCards.Server.Services
+{
+	public class CardService
+	{
+		readonly AppSettings _appSettings;
+		readonly ILogger<CardService> _logger;
+		readonly ServiceDbContext _dbContext;
+
+		public CardService(IOptions<AppSettings> appSettings, ILogger<CardService> logger, ServiceDbContext dbContext)
+		{
+			_appSettings = appSettings.Value;
+			_logger = logger;
+			_dbContext = dbContext;
+		}
+
+		public async Task<StandardResponse<CardSetView>> CreateCardSet(CreateCardSetRequest request)
+		{
+			var standardMessage = $"CardService:CreateCardSet({JsonSerializer.Serialize(request)})";
+			try
+			{
+				if (string.IsNullOrWhiteSpace(request?.Name?.Trim()))
+				{
+					return new StandardResponse<CardSetView>()
+					{
+						StatusCode = System.Net.HttpStatusCode.BadRequest,
+						Message = "CARD_SET_EMPTY_NAME",
+						Success = false
+					};
+				}
+				request.Name = request.Name.Trim();
+				if (request.Name.Length > 127)
+					request.Name = request.Name[0..127];
+
+				var set = await _dbContext.CardSet.AddAsync(new CardSet()
+				{
+					Id = 0,
+					SetName = request.Name,
+					ModifiedTime = DateTime.UtcNow,
+					UserId = request.UserId,
+					CreatedTime = DateTime.UtcNow
+				});
+
+				await _dbContext.SaveChangesAsync();
+				return new StandardResponse<CardSetView>()
+				{
+					Data = new CardSetView()
+					{
+						Id = set.Entity.Id,
+						SetName = set.Entity.SetName,
+						ModifiedTime = set.Entity.ModifiedTime
+					}
+				};
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: {standardMessage}");
+				return new StandardResponse<CardSetView>()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				};
+			}
+		}
+
+		public async Task<StandardResponse<List<CardSetView>>> GetCardSets(long userId)
+		{
+			var standardMessage = $"CardService:GetCardSets({userId})";
+			try
+			{
+				var sets = await _dbContext.CardSet.Where(x => x.UserId == userId).ToListAsync();
+				var viewSets = sets.Select(x => new CardSetView()
+				{
+					Id = x.Id,
+					ModifiedTime = x.ModifiedTime,
+					SetName = x.SetName
+				}).ToList();
+				return new StandardResponse<List<CardSetView>>()
+				{
+					Data = viewSets
+				};
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: {standardMessage}");
+				return new StandardResponse<List<CardSetView>>()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				};
+			}
+		}
+
+		public async Task<StandardResponse> EditCardSet(EditCardSetRequest request)
+		{
+			var standardMessage = $"CardService:GetCardSets({JsonSerializer.Serialize(request)})";
+			try
+			{
+				var set = (await _dbContext.CardSet.Where(x => x.Id == request.SetId && x.UserId == request.UserId).ToListAsync()).FirstOrDefault();
+				if (set == null)
+				{
+					return new StandardResponse<CardsView>()
+					{
+						Success = false,
+						StatusCode = System.Net.HttpStatusCode.NotFound,
+						Message = "CARD_SET_NOT_FOUND"
+					};
+				}
+
+				request.Name = request.Name.Trim();
+				if (request.Name.Length > 127)
+					request.Name = request.Name[0..127];
+				set.SetName = request.Name;
+				set.ModifiedTime = DateTime.UtcNow;
+
+				await _dbContext.SaveChangesAsync();
+
+				return new StandardResponse();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: {standardMessage}");
+				return new StandardResponse()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				};
+			}
+		}
+
+		public async Task<StandardResponse<CardsView>> CreateCards(CreateCardsRequest request)
+		{
+			var standardMessage = $"CardService:CreateCards({JsonSerializer.Serialize(request)})";
+			try
+			{
+				var cardSet = (await _dbContext.CardSet.Where(x => x.Id == request.SetId && x.UserId == request.UserId).ToListAsync()).FirstOrDefault();
+				if (cardSet == null)
+				{
+					return new StandardResponse<CardsView>()
+					{
+						StatusCode = System.Net.HttpStatusCode.BadRequest,
+						Message = "CARD_SET_NOT_EXIST",
+						Success = false
+					};
+				}
+
+				var newCards = new List<Card>();
+				foreach (var card in request.Cards)
+				{
+					card.BackValue = card.BackValue?.Trim();
+					card.FrontValue = card.FrontValue?.Trim();
+					if (card.BackValue?.Length >= 65535)
+						card.BackValue = card.BackValue[0..65534];
+					if (card.FrontValue?.Length >= 65535)
+						card.FrontValue = card.FrontValue[0..65534];
+
+					newCards.Add(new Card()
+					{
+						Id = 0,
+						FrontValue = card.FrontValue,
+						BackValue = card.BackValue,
+						SetId = request.SetId,
+						CreatedTime = DateTime.UtcNow,
+						ModifiedTime = DateTime.UtcNow
+					});
+				}
+
+				await _dbContext.Card.AddRangeAsync(newCards);
+				await _dbContext.SaveChangesAsync();
+				var ret = new CardsView()
+				{
+					Cards = newCards
+						.Select(x => new CardView()
+						{
+							Id = x.Id,
+							BackValue = x.BackValue,
+							FrontValue = x.FrontValue,
+							ModifiedTime = x.ModifiedTime
+						}).ToList()
+				};
+
+				return new StandardResponse<CardsView>()
+				{
+					Data = ret
+				};
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: {standardMessage}");
+				return new StandardResponse<CardsView>()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				};
+			}
+		}
+
+		public async Task<StandardResponse<CardsView>> GetCardsForSet(long userId, long setId)
+		{
+			var standardMessage = $"CardService:GetCardsForSet({userId}, {setId})";
+			try
+			{
+				var set = (await _dbContext.CardSet.Include(x => x.Cards).Where(x => x.Id == setId && x.UserId == userId).ToListAsync()).FirstOrDefault();
+				if (set?.Cards == null)
+				{
+					return new StandardResponse<CardsView>()
+					{
+						Success = false,
+						StatusCode = System.Net.HttpStatusCode.NotFound,
+						Message = "CARD_SET_NOT_FOUND"
+					};
+				}
+				return new StandardResponse<CardsView>()
+				{
+					Data = new CardsView()
+					{
+						Cards = set.Cards.Select(x => new CardView()
+						{
+							Id = x.Id,
+							BackValue = x.BackValue,
+							FrontValue = x.FrontValue,
+							ModifiedTime = x.ModifiedTime
+						}).ToList()
+					}
+				};
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: {standardMessage}");
+				return new StandardResponse<CardsView>()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				};
+			}
+		}
+	}
+}
