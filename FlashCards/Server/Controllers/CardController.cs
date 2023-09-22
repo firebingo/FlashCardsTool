@@ -87,7 +87,6 @@ namespace FlashCards.Server.Controllers
 			}
 		}
 
-
 		[HttpPatch("[action]")]
 		[Authorize]
 		public async Task<IActionResult> EditCardSet(EditCardSetRequest request)
@@ -111,6 +110,37 @@ namespace FlashCards.Server.Controllers
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, $"Exception in CardController:EditCardSet({JsonSerializer.Serialize(request)})");
+				return StatusCode(500, new StandardResponse()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.Unauthorized,
+					Message = "EXCEPTION"
+				});
+			}
+		}
+
+		[HttpDelete("[action]/{setId}")]
+		[Authorize]
+		public async Task<IActionResult> DeleteCardSet([FromRoute] long setId)
+		{
+			try
+			{
+				if (!AuthHelper.GetUserIdFromContextUser(HttpContext.User, out var userId))
+				{
+					return Unauthorized(new StandardResponse()
+					{
+						Success = false,
+						StatusCode = System.Net.HttpStatusCode.Unauthorized,
+						Message = "UNAUTHORIZED"
+					});
+				}
+
+				var res = await _cardService.DeleteCardSet(setId, userId);
+				return StatusCode((int)res.StatusCode, res);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception in CardController:DeleteCardSet({setId})");
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
@@ -174,6 +204,70 @@ namespace FlashCards.Server.Controllers
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, $"Exception in CardController:GetCardsForSet({setId})");
+				return StatusCode(500, new StandardResponse()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.Unauthorized,
+					Message = "EXCEPTION"
+				});
+			}
+		}
+
+		[HttpPatch("[action]")]
+		[Authorize]
+		public async Task<IActionResult> EditCards(EditCardsRequest request)
+		{
+			try
+			{
+				if (!AuthHelper.GetUserIdFromContextUser(HttpContext.User, out var userId))
+				{
+					return Unauthorized(new StandardResponse()
+					{
+						Success = false,
+						StatusCode = System.Net.HttpStatusCode.Unauthorized,
+						Message = "UNAUTHORIZED"
+					});
+				}
+
+				request.UserId = userId;
+				var res = await _cardService.EditCards(request);
+				return StatusCode((int)res.StatusCode, res);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception in CardController:EditCards({JsonSerializer.Serialize(request)})");
+				return StatusCode(500, new StandardResponse()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.Unauthorized,
+					Message = "EXCEPTION"
+				});
+			}
+		}
+
+		[HttpDelete("[action]")]
+		[Authorize]
+		public async Task<IActionResult> DeleteCards(DeleteCardsRequest request)
+		{
+			try
+			{
+				if (!AuthHelper.GetUserIdFromContextUser(HttpContext.User, out var userId))
+				{
+					return Unauthorized(new StandardResponse()
+					{
+						Success = false,
+						StatusCode = System.Net.HttpStatusCode.Unauthorized,
+						Message = "UNAUTHORIZED"
+					});
+				}
+
+				request.UserId = userId;
+				var res = await _cardService.DeleteCards(request);
+				return StatusCode((int)res.StatusCode, res);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception in CardController:DeleteCards({JsonSerializer.Serialize(request)})");
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,

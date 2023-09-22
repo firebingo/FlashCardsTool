@@ -144,6 +144,39 @@ namespace FlashCards.Server.Services
 			}
 		}
 
+		public async Task<StandardResponse> DeleteCardSet(long setId, long userId)
+		{
+			var standardMessage = $"CardService:DeleteCardSet({setId}, {userId})";
+			try
+			{
+				var set = (await _dbContext.CardSet.Where(x => x.Id == setId && x.UserId == userId).ToListAsync()).FirstOrDefault();
+				if (set == null)
+				{
+					return new StandardResponse<CardsView>()
+					{
+						Success = false,
+						StatusCode = System.Net.HttpStatusCode.NotFound,
+						Message = "CARD_SET_NOT_FOUND"
+					};
+				}
+
+				_dbContext.CardSet.Remove(set);
+				await _dbContext.SaveChangesAsync();
+
+				return new StandardResponse();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: {standardMessage}");
+				return new StandardResponse()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				};
+			}
+		}
+
 		public async Task<StandardResponse<CardsView>> CreateCards(CreateCardsRequest request)
 		{
 			var standardMessage = $"CardService:CreateCards({JsonSerializer.Serialize(request)})";
@@ -245,6 +278,99 @@ namespace FlashCards.Server.Services
 			{
 				_logger.LogError(ex, $"Exception: {standardMessage}");
 				return new StandardResponse<CardsView>()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				};
+			}
+		}
+
+		public async Task<StandardResponse<CardsView>> EditCards(EditCardsRequest request)
+		{
+			var standardMessage = $"CardService:EditCards({JsonSerializer.Serialize(request)})";
+			try
+			{
+				var set = (await _dbContext.CardSet.Include(x => x.Cards).Where(x => x.Id == request.SetId && x.UserId == request.UserId).ToListAsync()).FirstOrDefault();
+				if (set?.Cards == null)
+				{
+					return new StandardResponse<CardsView>()
+					{
+						Success = false,
+						StatusCode = System.Net.HttpStatusCode.NotFound,
+						Message = "CARD_SET_NOT_FOUND"
+					};
+				}
+				var retCards = new List<CardView>();
+				foreach (var card in request.Cards)
+				{
+					var dbCard = set.Cards.FirstOrDefault(x => x.Id == card.Id);
+					if (dbCard == null)
+					{
+						return new StandardResponse<CardsView>()
+						{
+							Success = false,
+							StatusCode = System.Net.HttpStatusCode.NotFound,
+							Message = "CARD_NOT_FOUND"
+						};
+					}
+					dbCard.FrontValue = card.FrontValue;
+					dbCard.BackValue = card.BackValue;
+					dbCard.ModifiedTime = DateTime.UtcNow;
+					retCards.Add(new CardView()
+					{
+						Id = dbCard.Id,
+						FrontValue = dbCard.FrontValue,
+						BackValue = dbCard.BackValue,
+						ModifiedTime = dbCard.ModifiedTime,
+					});
+				}
+
+				await _dbContext.SaveChangesAsync();
+				return new StandardResponse<CardsView>()
+				{
+					Data = new CardsView()
+					{
+						Cards = retCards
+					}
+				};
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: {standardMessage}");
+				return new StandardResponse<CardsView>()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				};
+			}
+		}
+
+		public async Task<StandardResponse> DeleteCards(DeleteCardsRequest request)
+		{
+			var standardMessage = $"CardService:DeleteCards({JsonSerializer.Serialize(request)})";
+			try
+			{
+				var set = (await _dbContext.CardSet.Include(x => x.Cards).Where(x => x.Id == request.SetId && x.UserId == request.UserId).ToListAsync()).FirstOrDefault();
+				if (set?.Cards == null)
+				{
+					return new StandardResponse()
+					{
+						Success = false,
+						StatusCode = System.Net.HttpStatusCode.NotFound,
+						Message = "CARD_SET_NOT_FOUND"
+					};
+				}
+				var deleteCards = set.Cards.IntersectBy(request.Cards.Select(x => x.Id), x => x.Id);
+				_dbContext.RemoveRange(deleteCards);
+				await _dbContext.SaveChangesAsync();
+				return new StandardResponse();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: {standardMessage}");
+				return new StandardResponse()
 				{
 					Success = false,
 					StatusCode = System.Net.HttpStatusCode.InternalServerError,

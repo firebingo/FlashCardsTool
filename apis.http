@@ -42,6 +42,10 @@ content-type: application/json
 
 ###
 
+DELETE https://localhost:7062/api/card/DeleteCardSet/1 HTTP/1.1
+
+###
+
 PUT https://localhost:7062/api/card/CreateCards HTTP/1.1
 content-type: application/json
 
@@ -66,3 +70,41 @@ content-type: application/json
 ###
 
 GET https://localhost:7062/api/card/GetCardsForSet/1 HTTP/1.1
+
+###
+
+PATCH https://localhost:7062/api/card/EditCards HTTP/1.1
+content-type: application/json
+
+{
+    "setId": 1,
+    "cards": [
+        {
+            "id": 1,
+            "frontValue": "test edit 1",
+            "backValue": "test edit back"
+        },
+        {
+            "id": 3,
+            "frontValue": "test edit 2",
+            "backValue": null
+        },
+    ]
+}
+
+###
+
+DELETE https://localhost:7062/api/card/DeleteCards HTTP/1.1
+content-type: application/json
+
+{
+    "setId": 1,
+    "cards": [
+        {
+            "id": 1
+        },
+        {
+            "id": 2
+        }
+    ]
+}
