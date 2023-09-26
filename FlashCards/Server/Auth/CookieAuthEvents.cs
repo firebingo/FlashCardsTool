@@ -1,6 +1,7 @@
 ﻿using FlashCards.Server.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,18 @@ namespace FlashCards.Server.Auth
 		public CookieAuthEvents(ServiceDbContext dbContext)
 		{
 			_dbContext = dbContext;
+		}
+
+		public override Task RedirectToLogin(RedirectContext<CookieAuthenticationOptions> context)
+		{
+			if (context.Request.Path.StartsWithSegments("/api") && context.Response.StatusCode == StatusCodes.Status200OK)
+			{
+				context.Response.Clear();
+				context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+				return Task.CompletedTask;
+			}
+			context.Response.Redirect(context.RedirectUri);
+			return Task.CompletedTask;
 		}
 
 		public override async Task ValidatePrincipal(CookieValidatePrincipalContext context)

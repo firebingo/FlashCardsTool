@@ -1,0 +1,22 @@
+﻿.loginContainer {
+    margin: auto;
+    width: 100%;
+}
+
+    .loginContainer form .inputField {
+        width: 250px;
+    }
+
+    .loginContainer .loginError {
+        margin-top: 4px;
+    }
+
+    .loginButton {
+        margin-top: 6px;
+    }
+
+@media only screen and (max-width: 768px) {
+    .loginContainer form .inputField {
+        width: 85%;
+    }
+} 

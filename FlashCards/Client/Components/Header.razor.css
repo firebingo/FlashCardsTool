@@ -1,0 +1,16 @@
+﻿.header {
+    background-color: var(--dark-bg-color);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.headerButton {
+    background: none;
+    border: none;
+    color: var(--base-font-color);
+    font-size: var(--f28);
+    line-height: var(--f28);
+    margin-left: 8px;
+}

@@ -6,6 +6,8 @@ using IdGen.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,8 +17,11 @@ using NLog.Extensions.Logging;
 using NLog.Targets;
 using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
+using ZstdSharp.Unsafe;
 
 namespace FlashCards
 {
@@ -46,6 +51,8 @@ namespace FlashCards
 			{
 				builder.Services.AddResponseCompression(options =>
 				{
+					options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+						new[] { "application/x-font-ttf" });
 					options.EnableForHttps = true;
 				});
 			}
@@ -55,10 +62,10 @@ namespace FlashCards
 			).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
 				options =>
 				{
-					options.LoginPath = "/Login";
-					options.LogoutPath = "/Logout";
-					options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
-					options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+					options.LoginPath = PathString.Empty;
+					options.LogoutPath = PathString.Empty;
+					options.Cookie.SameSite = SameSiteMode.Strict;
+					options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 					options.EventsType = typeof(CookieAuthEvents);
 					options.SlidingExpiration = true;
 				});

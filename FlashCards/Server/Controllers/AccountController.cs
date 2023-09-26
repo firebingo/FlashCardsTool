@@ -76,6 +76,13 @@ namespace FlashCards.Server.Controllers
 			}
 		}
 
+		[HttpGet("[action]")]
+		[Authorize]
+		public IActionResult CheckUserAuth()
+		{
+			return Ok();
+		}
+
 		[HttpPost("[action]")]
 		public async Task<IActionResult> Register(RegisterRequest request)
 		{

@@ -1,3 +1,82 @@
+@font-face {
+    font-family: "OpenSans";
+    src: url("../fonts/OpenSans-VariableFont_wdth,wght.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "NotoSansJP";
+    src: url("../fonts/NotoSansJP-VariableFont_wght.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+html {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    font-size: 16px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font);
+    font-size: var(--f16);
+    --base-font-color: rgba(255,255,255,.7);
+    --base-bg-color: #393939;
+    --mid-bg-color: #343434;
+    --dark-bg-color: #303030;
+    --base-border-color: rgba(255,255,255,.2);
+    --base-link-color: #0096cf;
+    --error-color: rgba(210, 0, 0, .8);
+    --border-radius: 3px;
+    --large-border-radius: 7px;
+    --input-background: var(--dark-bg-color);
+    --input-border-color: #777;
+    --input-background-disabled: transparent;
+    --input-border-color-disabled: transparent;
+    --button-primary-background: #181818;
+    --button-primary-border: #777;
+    --button-primary-shadow-color: #777;
+    --button-primary-hover-background: #282828;
+    --button-positive-background-color: #325563;
+    --button-positive-border-color: #78909c;
+    --button-positive-shadow-color: #78909c;
+    --button-positive-hover-background: #3b6373;
+    --button-negative-background-color: #633232;
+    --button-negative-border-color: #804a41;
+    --button-negative-shadow-color: #804a41;
+    --button-negative-hover-background: #733b3b;
+    --font: "OpenSans", "NotoSansJP", sans-serif, serif;
+    --f48: 3rem;
+    --f36: 2.25rem;
+    --f28: 1.75rem;
+    --f22: 1.375rem;
+    --f20: 1.25rem;
+    --f18: 1.125rem;
+    --f16: 1rem;
+    --f14: 0.875rem;
+    --f12: 0.75rem;
+    --f8: 0.5rem;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    background-color: var(--base-bg-color);
+    color: var(--base-font-color);
+}
+
+#app {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
 .loading-progress {
     position: relative;
     display: block;
@@ -30,3 +109,91 @@
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+
+.validation-message {
+    color: var(--error-color);
+}
+
+a {
+    color: var(--base-link-color);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+input {
+    font-family: var(--font);
+    font-size: var(--f16);
+    background: var(--input-background);
+    border: 1px solid var(--input-border-color);
+    color: var(--foreground-color);
+    border-radius: var(--border-radius);
+    padding: 1px 2px;
+}
+
+    input:disabled {
+        background: var(--input-background-disabled);
+        border: 1px solid var(--input-border-color-disabled);
+        color: var(--foreground-color);
+        border-radius: var(--border-radius);
+    }
+
+    input[type='checkbox'][readonly] {
+        opacity: 0.55;
+    }
+
+.inputField {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 4px;
+}
+
+    .inputField .inputFieldError {
+        height: var(--f14);
+        font-size: var(--f14);
+    }
+
+button {
+    color: var(--foreground-color);
+    padding: 4px 10px;
+    border-radius: var(--border-radius);
+    font-size: var(--f16);
+    font-family: var(--font);
+}
+
+    button:disabled {
+        opacity: 0.55;
+    }
+
+    button.primary {
+        background: var(--button-primary-background);
+        border: 1px solid var(--button-primary-border);
+        box-shadow: inset 1px 1px 5px 0 var(--button-primary-shadow-color);
+    }
+
+        button.primary:not(:disabled):hover {
+            background: var(--button-primary-hover-background);
+        }
+
+    button.positive {
+        background: var(--button-positive-background-color);
+        border: 1px solid var(--button-positive-border-color);
+        box-shadow: inset 1px 1px 5px 0 var(--button-positive-shadow-color);
+    }
+
+        button.positive:not(:disabled):hover {
+            background: var(--button-positive-hover-background);
+        }
+
+    button.negative {
+        background: var(--button-negative-background-color);
+        border: 1px solid var(--button-negative-border-color);
+        box-shadow: inset 1px 1px 5px 0 var(--button-negative-shadow-color);
+    }
+
+        button.negative:not(:disabled):hover {
+            background: var(--button-negative-hover-background);
+        }

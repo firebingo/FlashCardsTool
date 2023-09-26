@@ -1,0 +1,55 @@
+﻿@inject NavigationManager _navManager
+@inject HttpClient _httpClient
+
+<div class="@MenuClass">
+    @foreach(var item in _navitems)
+    {
+        <div class="navItem">
+            <NavLink href="@item.Url">
+                @item.Text
+            </NavLink>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public bool MenuOpen { get; set; }
+
+    private List<NavItem> _navitems = new List<NavItem>();
+
+    string MenuClass
+    {
+        get => $"navMenu{(MenuOpen ? "" : " closed")}";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var authRes = await _httpClient.GetAsync("api/Account/CheckUserAuth");
+        if(!authRes.IsSuccessStatusCode)
+            _navManager.NavigateTo("/Login");
+
+        _navitems.Add(new NavItem()
+            {
+                Text = "Cards",
+                Url = "/CardSets"
+            });
+        _navitems.Add(new NavItem()
+            {
+                Text = "Account",
+                Url = "/Account"
+            });
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        var uri = _navManager.ToBaseRelativePath(_navManager.Uri);
+    }
+
+    class NavItem
+    {
+        public string Url { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
+        public bool Selected { get; set; } = false;
+    }
+}

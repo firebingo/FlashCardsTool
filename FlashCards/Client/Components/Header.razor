@@ -1,0 +1,33 @@
+﻿<div class="header">
+    <button class="headerButton" @onclick="OnMenuClicked">☰</button>
+</div>
+
+@code {
+    private bool _menuOpenValue;
+
+    [Parameter]
+    public EventCallback<bool> MenuOpenChanged { get; set; }
+
+    [Parameter]
+    public bool MenuOpen { get; set; }
+
+    public bool MenuOpenValue
+    {
+        get => _menuOpenValue;
+        set
+        {
+            _menuOpenValue = value;
+            MenuOpenChanged.InvokeAsync(value);
+        }
+    }
+
+    void OnMenuClicked()
+    {
+        MenuOpenValue = !MenuOpenValue;
+    }
+
+    protected override void OnInitialized()
+    {
+        _menuOpenValue = MenuOpen;
+    }
+}

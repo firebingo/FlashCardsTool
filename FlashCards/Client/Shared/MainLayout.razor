@@ -1,5 +1,32 @@
-﻿@inherits LayoutComponentBase
+﻿@using FlashCards.Client.Components
+@inherits LayoutComponentBase
+@inject NavigationManager _navManager
 
-<div class="page">
-    @Body
+<div id="root">
+    <div class="rootContainer">
+        @if (_navManager.Uri.Contains("Login"))
+        {
+            <div class="routeContainer">
+                @Body
+            </div>
+        }
+        else
+        {
+            <div class="layoutContainer">
+                <div class="layoutHeader">
+                    <Header @bind-MenuOpen="MenuOpen" />
+                </div>
+                <div class=routeContainerFlex>
+                    <NavMenu MenuOpen="@MenuOpen" />
+                    <div class="routeContainer">
+                        @Body
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
+
+@code {
+    bool MenuOpen { get; set; } = true;
+}
