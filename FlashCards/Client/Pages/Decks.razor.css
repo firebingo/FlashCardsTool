@@ -1,0 +1,91 @@
+﻿.decksRootContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.decksHeader {
+    height: 35px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.decksContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    align-content: flex-start;
+}
+
+.deckErrorMessage {
+    margin: auto;
+}
+
+.deckListing {
+    width: 265px;
+    height: 166px;
+    background-color: var(--base-bg-color);
+    border: 1px solid var(--base-border-color);
+    border-radius: var(--large-border-radius);
+    display: flex;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    position: relative;
+    cursor: pointer;
+}
+
+.deckListingBack {
+    position: absolute;
+    border: 1px solid var(--base-border-color);
+    border-radius: var(--large-border-radius);
+    width: 101%;
+    height: 101%;
+}
+
+.deckListingBackOne {
+    z-index: -1;
+    margin: 0px 0 0 0px;
+}
+
+.deckListingBackTwo {
+    z-index: -2;
+    margin: 1px 0 0 1px;
+}
+
+.deckListingBackThree {
+    z-index: -3;
+    margin: 2px 0 0 2px;
+}
+
+.deckListing:hover {
+    border-color: var(--hover-border-color);
+}
+
+    .deckListing:hover .deckListingBack {
+        border-color: var(--hover-border-color);
+    }
+
+.deckName {
+    margin: auto;
+    font-size: var(--f20);
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 8px;
+}
+
+@media only screen and (max-width: 768px) {
+    .decksContainer {
+        overflow: auto;
+    }
+
+    .deckListing {
+        width: 100%;
+        margin-right: 0;
+        overflow: hidden;
+    }
+}

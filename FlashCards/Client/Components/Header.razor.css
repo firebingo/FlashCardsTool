@@ -14,3 +14,13 @@
     line-height: var(--f28);
     margin-left: 8px;
 }
+
+.headerUserName {
+    display: flex;
+    align-items: center;
+    margin: auto 12px auto auto;
+}
+
+.headerUserName button {
+    margin-left: 8px;
+}

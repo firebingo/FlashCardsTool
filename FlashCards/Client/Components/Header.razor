@@ -1,5 +1,13 @@
-﻿<div class="header">
+﻿@using System.Text.Json;
+@inject NavigationManager _navManager
+@inject HttpClient _httpClient
+
+<div class="header">
     <button class="headerButton" @onclick="OnMenuClicked">☰</button>
+    <div class="headerUserName">
+        <div>@_userName</div>
+        <button class="negative" @onclick="OnSignOutClicked">Logout</button>
+    </div>
 </div>
 
 @code {
@@ -21,13 +29,40 @@
         }
     }
 
+    private string _userName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _menuOpenValue = MenuOpen;
+        using var infoRes = await _httpClient.GetAsync("/api/Account/GetUserHeaderInfo");
+        var infoResS = await infoRes.Content.ReadAsStringAsync();
+        if (!infoRes.IsSuccessStatusCode || string.IsNullOrWhiteSpace(infoResS) || !infoResS.StartsWith('{'))
+        {
+            _userName = "Error loading user";
+            return;
+        }
+        var info = JsonSerializer.Deserialize<StandardResponse<UserHeaderInfoResponse>>(infoResS, DefaultJsonOptions.DefaultOptions);
+        if(info?.Success != true || info.Data == null)
+        {
+            _userName = "Error loading user";
+            return;
+        }
+        _userName = info.Data.UserName;
+        if (_userName.Length > 21)
+            _userName = $"{_userName[0..20]}...";
+    }
+
     void OnMenuClicked()
     {
         MenuOpenValue = !MenuOpenValue;
     }
 
-    protected override void OnInitialized()
+    async Task OnSignOutClicked()
     {
-        _menuOpenValue = MenuOpen;
+        using var signOutRes = await _httpClient.PostAsync("/api/Account/Logout", null);
+        if (signOutRes.IsSuccessStatusCode)
+            _navManager.NavigateTo("/Login");
+        else
+            _userName = "Error logging out";
     }
 }

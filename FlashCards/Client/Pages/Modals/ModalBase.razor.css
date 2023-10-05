@@ -1,0 +1,54 @@
+﻿.baseModal h3 {
+    margin: 0;
+    font-size: var(--f20);
+    margin: auto;
+}
+
+.baseModalHeader {
+    display: flex;
+    position: relative;
+    padding-bottom: 16px;
+}
+
+.baseModalBody {
+    display: flex;
+    flex-direction: column;
+    font-size: var(--f14);
+}
+
+    .baseModalBody ::deep form {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .baseModalBody ::deep form .inputField {
+            width: 100%;
+        }
+
+.baseModalFooter {
+    padding-top: 16px;
+    display: flex;
+    justify-content: end;
+}
+
+::deep .baseModalError {
+    padding-top: 8px;
+}
+
+::deep .baseModalFullLoader {
+    display: flex;
+    width: 100%;
+    height: 80px;
+}
+
+@media only screen and (max-width: 768px) {
+    .baseModal {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .baseModalBody {
+        height: 100%;
+    }
+} 

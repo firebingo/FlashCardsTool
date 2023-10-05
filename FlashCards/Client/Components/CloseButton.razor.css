@@ -1,0 +1,20 @@
+﻿.closeButton {
+    position: absolute;
+    right: 0;
+    background-image: none;
+    background-color: #efefef;
+    border: 0;
+    border-radius: 20px;
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+    .closeButton ::deep svg {
+        display: block;
+        margin: auto;
+        opacity: 0.75;
+        width: 25px;
+    }

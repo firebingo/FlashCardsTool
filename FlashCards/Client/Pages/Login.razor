@@ -1,6 +1,4 @@
 ﻿@using System.ComponentModel.DataAnnotations;
-@using FlashCards.Shared.Models.Auth;
-@using FlashCards.Shared.Util;
 @using System.Text;
 @using System.Text.Json;
 @inject HttpClient _httpClient
@@ -30,6 +28,12 @@
         }
         <button type="submit" class="positive loginButton">Login</button>
     </EditForm>
+    @if (CanRegister)
+    {
+        <div class="registerButtonContainer">
+            <button class="positive" @onclick="OnRegisterClicked">Register</button>
+        </div>
+    }
 </div>
 
 @code {
@@ -37,9 +41,21 @@
     private EditContext? _editContext;
 
     public LoginFormModel? Model { get; set; }
+    public bool CanRegister { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        using var authCheck = await _httpClient.GetAsync("api/Account/CheckUserAuth");
+        if (authCheck.IsSuccessStatusCode)
+        {
+            _navManager.NavigateTo("/Decks");
+            return;
+        }
+
+        using var regRes = await _httpClient.GetAsync("api/Account/CheckCanRegister");
+        var regS = await regRes.Content.ReadAsStringAsync();
+        var regInfo = JsonSerializer.Deserialize<StandardResponse<CanRegisterResponse>>(regS);
+        CanRegister = regInfo?.Success ?? false;
         Model ??= new LoginFormModel();
         _editContext = new EditContext(Model);
     }
@@ -65,7 +81,12 @@
             _errorMessage = "Invalid login";
             return;
         }
-        _navManager.NavigateTo("/CardSets");
+        _navManager.NavigateTo("/Decks");
+    }
+
+    private void OnRegisterClicked()
+    {
+        _navManager.NavigateTo("/Register");
     }
 
     public class LoginFormModel

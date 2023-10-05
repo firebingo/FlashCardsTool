@@ -5,10 +5,13 @@ using FlashCards.Shared.Models;
 using FlashCards.Shared.Models.Auth;
 using FlashCards.Shared.Util;
 using IdGen;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace FlashCards.Server.Services
@@ -26,6 +29,64 @@ namespace FlashCards.Server.Services
 			_logger = logger;
 			_dbContext = dbContext;
 			_idGen = idGen;
+		}
+
+		public StandardResponse<UserHeaderInfoResponse> GetUserHeaderInfo(HttpContext context)
+		{
+			try
+			{
+				var userName = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+				var email = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
+				if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(email))
+				{
+					_logger.LogWarning($"Failed to get user claims: AccountService.GetUserHeaderInfo({context?.User?.Identity?.Name})");
+					return new StandardResponse<UserHeaderInfoResponse>()
+					{
+						Success = false,
+						Message = "ERROR",
+						StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					};
+				}
+				return new StandardResponse<UserHeaderInfoResponse>()
+				{
+					Data = new UserHeaderInfoResponse()
+					{
+						Email = email,
+						UserName = userName,
+					}
+				};
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: AccountService.GetUserHeaderInfo({context?.User?.Identity?.Name})");
+				return new StandardResponse<UserHeaderInfoResponse>()
+				{
+					Success = false,
+					Message = "EXCEPTION",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+				};
+			}
+		}
+
+		public StandardResponse<CanRegisterResponse> CanRegister()
+		{
+			if (_appSettings.UserSettings.RegistrationOpen)
+				return new StandardResponse<CanRegisterResponse>()
+				{
+					Data = new CanRegisterResponse()
+					{
+						EmailRequired = _appSettings.UserSettings.RequireEmail
+					}
+				};
+			else
+			{
+				return new StandardResponse<CanRegisterResponse>()
+				{
+					Success = false,
+					Message = "REGISTRATION_NOT_OPEN",
+					StatusCode = System.Net.HttpStatusCode.Forbidden
+				};
+			}
 		}
 
 		public async Task<StandardResponse> Register(RegisterRequest request)

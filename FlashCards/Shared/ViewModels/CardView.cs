@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace FlashCards.Shared.ViewModels
 {
@@ -14,5 +15,7 @@ namespace FlashCards.Shared.ViewModels
 		public string? FrontValue { get; set; }
 		public string? BackValue { get; set; }
 		public DateTime ModifiedTime { get; set; }
+		[JsonIgnore]
+		public bool Flipped { get; set; }
 	}
 }

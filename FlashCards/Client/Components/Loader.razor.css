@@ -1,0 +1,26 @@
+﻿.loaderContainer {
+    display: flex;
+    margin: auto;
+    height: 40px;
+    width: 40px;
+}
+
+.loaderCircle {
+    animation: loaderAnim 2s linear infinite;
+    border-color: var(--loader-foreground) var(--loader-background) var(--loader-background);
+    border-radius: 40px;
+    border-style: solid;
+    border-width: 5px;
+    height: 40px;
+    width: 40px;
+}
+
+@keyframes loaderAnim {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

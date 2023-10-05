@@ -83,12 +83,18 @@ namespace FlashCards.Server.Services
 			try
 			{
 				var sets = await _dbContext.CardSet.Where(x => x.UserId == userId).ToListAsync();
-				var viewSets = sets.Select(x => new CardSetView()
+				var viewSets = new List<CardSetView>();
+				foreach (var set in sets)
 				{
-					Id = x.Id,
-					ModifiedTime = x.ModifiedTime,
-					SetName = x.SetName
-				}).ToList();
+					viewSets.Add(new CardSetView()
+					{
+						Id = set.Id,
+						ModifiedTime = set.ModifiedTime,
+						CardCount = await _dbContext.Card.CountAsync(y => y.SetId == set.Id),
+						SetName = set.SetName
+					});
+				}
+
 				return new StandardResponse<List<CardSetView>>()
 				{
 					Data = viewSets

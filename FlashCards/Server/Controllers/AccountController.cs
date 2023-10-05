@@ -78,9 +78,50 @@ namespace FlashCards.Server.Controllers
 
 		[HttpGet("[action]")]
 		[Authorize]
+		public IActionResult GetUserHeaderInfo()
+		{
+			try
+			{
+				var res = _accountService.GetUserHeaderInfo(HttpContext);
+				return StatusCode((int)res.StatusCode, res);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception in AccountController:GetUserHeaderInfo({HttpContext.User?.Identity?.Name})");
+				return StatusCode(500, new StandardResponse()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				});
+			}
+		}
+
+		[HttpGet("[action]")]
+		[Authorize]
 		public IActionResult CheckUserAuth()
 		{
 			return Ok();
+		}
+
+		[HttpGet("[action]")]
+		public IActionResult CheckCanRegister()
+		{
+			try
+			{
+				var res = _accountService.CanRegister();
+				return StatusCode((int)res.StatusCode, res);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception in AccountController:CheckCanRegister({HttpContext.User?.Identity?.Name})");
+				return StatusCode(500, new StandardResponse()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				});
+			}
 		}
 
 		[HttpPost("[action]")]
@@ -89,11 +130,20 @@ namespace FlashCards.Server.Controllers
 			try
 			{
 				var res = await _accountService.Register(request);
+				if (res.Success)
+				{
+					await _userManager.SignIn(HttpContext, new LoginRequest()
+					{
+						UserName = request.UserName,
+						Email = request.Email,
+						Password = request.Password,
+					});
+				}
 				return StatusCode((int)res.StatusCode, res);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Exception in AccountController:Logout({HttpContext.User?.Identity?.Name})");
+				_logger.LogError(ex, $"Exception in AccountController:Register({HttpContext.User?.Identity?.Name})");
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,

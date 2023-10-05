@@ -1,0 +1,187 @@
+﻿@using System.ComponentModel.DataAnnotations;
+@using FlashCards.Client.Components;
+@using System.Text;
+@using System.Text.Json;
+@inject HttpClient _httpClient
+@inject NavigationManager _navManager
+@page "/Register"
+
+<div class="loginContainer">
+    @if (!CanRegister)
+    {
+        <div><h3>Registration is not open.</h3></div>
+    }
+    else
+    {
+        <EditForm EditContext="@_editContext" OnSubmit="@Submit">
+            <CustomValidation @ref="_customValidation" />
+            <div class="inputField">
+                <label>Username:</label>
+                <InputText @bind-Value="Model!.Username" />
+                <div class="inputFieldError">
+                    <ValidationMessage For="@(() => Model!.Username)" />
+                </div>
+            </div>
+            <div class="inputField">
+                <label>Email:</label>
+                <InputText @bind-Value="Model!.Email" />
+                <div class="inputFieldError">
+                    <ValidationMessage For="@(() => Model!.Email)" />
+                </div>
+            </div>
+            <div class="inputField">
+                <label>Password:</label>
+                <InputText type="password" @bind-Value="Model!.Password" />
+                <div class="inputFieldError">
+                    <ValidationMessage For="@(() => Model!.Password)" />
+                </div>
+            </div>
+            <div class="inputField">
+                <label>Confirm Password:</label>
+                <InputText type="password" @bind-Value="Model!.ConfirmPassword" />
+                <div class="inputFieldError">
+                    <ValidationMessage For="@(() => Model!.ConfirmPassword)" />
+                </div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                <div class="loginError validation-message">@_errorMessage</div>
+            }
+            <button type="submit" class="positive loginButton">Register</button>
+        </EditForm>
+    }
+</div>
+
+@code {
+    private string _errorMessage = string.Empty;
+    private CustomValidation? _customValidation;
+    private EditContext? _editContext;
+
+    public LoginFormModel? Model { get; set; }
+    public bool CanRegister { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var authCheck = await _httpClient.GetAsync("api/Account/CheckUserAuth");
+        if (authCheck.IsSuccessStatusCode)
+        {
+            _navManager.NavigateTo("/Decks");
+            return;
+        }
+
+        using var regRes = await _httpClient.GetAsync("api/Account/CheckCanRegister");
+        var regS = await regRes.Content.ReadAsStringAsync();
+        var regInfo = JsonSerializer.Deserialize<StandardResponse<CanRegisterResponse>>(regS);
+        CanRegister = regInfo?.Success ?? false;
+        Model ??= new LoginFormModel();
+        Model.EmailRequired = regInfo?.Data?.EmailRequired ?? false;
+        _editContext = new EditContext(Model);
+    }
+
+    private async Task Submit()
+    {
+        _errorMessage = string.Empty;
+        if (!ValidateForm())
+        {
+            return;
+        }
+        var postModel = new RegisterRequest()
+            {
+                UserName = Model!.Username,
+                Email = string.IsNullOrWhiteSpace(Model!.Email) ? null : Model!.Email,
+                Password = Model!.Password
+            };
+        using var content = new StringContent(JsonSerializer.Serialize(postModel, DefaultJsonOptions.DefaultOptions), Encoding.UTF8, "application/json");
+        using var registerRes = await _httpClient.PostAsync("api/Account/Register", content);
+        var registerResS = await registerRes.Content.ReadAsStringAsync();
+        if (string.IsNullOrWhiteSpace(registerResS) || !registerResS.StartsWith('{'))
+        {
+            _errorMessage = $"An error occured in registration. ({registerRes.StatusCode})";
+            return;
+        }
+        var response = JsonSerializer.Deserialize<StandardResponse>(registerResS, DefaultJsonOptions.DefaultOptions);
+        if (!registerRes.IsSuccessStatusCode || response == null || !response.Success)
+        {
+            _errorMessage = string.IsNullOrWhiteSpace(response?.Message) ? $"An error occured in registration. ({registerRes.StatusCode})" : response.Message;
+            return;
+        }
+        _navManager.NavigateTo("/Decks");
+    }
+
+    private bool ValidateForm()
+    {
+        _customValidation?.ClearErrors();
+
+        var errors = new Dictionary<string, List<string>>();
+        var model = Model!;
+
+        //Username
+        if (string.IsNullOrWhiteSpace(model.Username))
+        {
+            errors.Add(nameof(model.Username),
+               new() { "Required" });
+        }
+        if (!string.IsNullOrWhiteSpace(model.Username) && model.Username.Length > 128)
+        {
+            errors.Add(nameof(model.Username),
+               new() { "Max length of 128" });
+        }
+
+        //Email
+        if (model.EmailRequired && string.IsNullOrWhiteSpace(model.Email))
+        {
+            errors.Add(nameof(model.Email),
+               new() { "Required" });
+        }
+        if (!string.IsNullOrWhiteSpace(model.Email) && model.Email.Length > 128)
+        {
+            errors.Add(nameof(model.Email),
+               new() { "Max length of 128" });
+        }
+        if (!string.IsNullOrWhiteSpace(model.Email) && !RegexUtil.SimpleEmailRegex().IsMatch(model.Email))
+        {
+            errors.Add(nameof(model.Email),
+               new() { "Invalid Email" });
+        }
+
+        //Password
+        if (string.IsNullOrWhiteSpace(model.Password))
+        {
+            errors.Add(nameof(model.Password),
+               new() { "Required" });
+        }
+        if (string.IsNullOrWhiteSpace(model.ConfirmPassword))
+        {
+            errors.Add(nameof(model.ConfirmPassword),
+               new() { "Required" });
+        }
+        if (!string.IsNullOrWhiteSpace(model.Password) && !string.IsNullOrWhiteSpace(model.ConfirmPassword) && model.Password != model.ConfirmPassword)
+        {
+            errors.Add(nameof(model.ConfirmPassword),
+               new() { "Passwords do not match" });
+        }
+
+        if(errors.Any())
+        {
+            _customValidation?.DisplayErrors(errors);
+            return false;
+        }
+
+        return true;
+    }
+
+    public class LoginFormModel
+    {
+        [Required(ErrorMessage = "Required")]
+        [StringLength(128, ErrorMessage = "Max length of 128")]
+        public string Username { get; set; } = string.Empty;
+        [RequiredIf(nameof(EmailRequired), true, ErrorMessage = "Required")]
+        [StringLength(128, ErrorMessage = "Max length of 128")]
+        public string Email { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Required")]
+        public string Password { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Required")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+        public bool EmailRequired { get; set; } = true;
+    }
+}

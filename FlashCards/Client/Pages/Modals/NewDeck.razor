@@ -1,0 +1,99 @@
+﻿@using FlashCards.Shared.ViewModels;
+@using Radzen;
+@using System.Text.Json;
+@using System.ComponentModel.DataAnnotations;
+@using System.Text;
+@inject DialogService _dialogService
+@inject HttpClient _httpClient
+
+<ModalBase Title="New Deck" CloseCallback="OnClose">
+    <ModalBody>
+        <EditForm EditContext="_editContext">
+            <DataAnnotationsValidator />
+            <div class="inputField">
+                <label>Name:</label>
+                <InputText @bind-Value="_formModel!.Name" />
+                <div class="inputFieldError">
+                    <ValidationMessage For="@(() => _formModel!.Name)" />
+                </div>
+            </div>
+        </EditForm>
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="baseModalError error">
+                @_error
+            </div>
+        }
+    </ModalBody>
+    <ModalButtons>
+        <button class="positive" disabled="@_loading" @onclick="Submit">Create</button>
+    </ModalButtons>
+</ModalBase>
+
+@code {
+    [Parameter]
+    public Func<Task>? CompleteCallback { get; set; }
+
+    EditContext? _editContext;
+    FormModel? _formModel { get; set; }
+    string _error { get; set; } = string.Empty;
+    bool _loading { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _formModel ??= new FormModel();
+        _editContext = new EditContext(_formModel);
+    }
+
+    async Task Submit()
+    {
+        if (!_editContext!.Validate())
+        {
+            return;
+        }
+        await CreateDeck();
+    }
+
+    async Task CreateDeck()
+    {
+        _loading = true;
+        _error = string.Empty;
+        var postModel = new CreateCardSetRequest()
+            {
+                Name = _formModel!.Name
+            };
+        using var content = new StringContent(JsonSerializer.Serialize(postModel, DefaultJsonOptions.DefaultOptions), Encoding.UTF8, "application/json");
+        using var res = await _httpClient.PutAsync("/api/card/CreateCardSet", content);
+        var resS = await res.Content.ReadAsStringAsync();
+        if (!res.IsSuccessStatusCode || string.IsNullOrWhiteSpace(resS) || !resS.StartsWith('{'))
+        {
+            _error = $"Error creating deck. ({res.StatusCode})";
+            _loading = false;
+            return;
+        }
+        var result = JsonSerializer.Deserialize<StandardResponse<CardSetView>>(resS, DefaultJsonOptions.DefaultOptions);
+        if(result?.Success != true)
+        {
+            _error = $"Error creating deck. ({res.StatusCode})";
+            _loading = false;
+            return;
+        }
+
+        _loading = false;
+        _dialogService.Close();
+        if (CompleteCallback != null)
+            await CompleteCallback();
+    }
+
+    void OnClose()
+    {
+        _dialogService.Close();
+    }
+
+    class FormModel
+    {
+        [Required(ErrorMessage = "Required")]
+        [StringLength(128, ErrorMessage = "Max length of 128")]
+        public string Name { get; set; } = string.Empty;
+    }
+}

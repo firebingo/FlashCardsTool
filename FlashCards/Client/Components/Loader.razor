@@ -1,0 +1,10 @@
+﻿<div class="loaderContainer" style="@($"transform: scale({Scale}); margin: {Margin};")">
+    <div class="loaderCircle" />
+</div>
+
+@code {
+    [Parameter]
+    public float Scale { get; set; } = 1.0f;
+    [Parameter]
+    public string Margin { get; set; } = "auto";
+}

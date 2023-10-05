@@ -15,17 +15,8 @@
         margin-top: 6px;
     }
 
-.registerButtonContainer {
-    margin-top: 12px;
-    display: flex;
-}
-
-    .registerButtonContainer button {
-        margin: auto;
-    }
-
-    @media only screen and (max-width: 768px) {
-        .loginContainer form .inputField {
+@media only screen and (max-width: 768px) {
+    .loginContainer form .inputField {
         width: 85%;
     }
 } 

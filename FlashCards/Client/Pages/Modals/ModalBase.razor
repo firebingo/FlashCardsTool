@@ -1,0 +1,25 @@
+﻿@using FlashCards.Client.Components
+
+<div class="baseModal">
+    <div class="baseModalHeader">
+        <h3>@Title</h3>
+        <CloseButton CloseCallback="CloseCallback"/>
+    </div>
+    <div class="baseModalBody">
+        @ModalBody
+    </div>
+    <div class="baseModalFooter">
+        @ModalButtons
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+    [Parameter]
+    public RenderFragment? ModalBody { get; set; }
+    [Parameter]
+    public RenderFragment? ModalButtons { get; set; }
+    [Parameter]
+    public EventCallback<MouseEventArgs> CloseCallback { get; set; }
+}

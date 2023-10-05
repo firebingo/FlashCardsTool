@@ -1,0 +1,51 @@
+﻿@using FlashCards.Client.Components
+@inject HttpClient _httpClient
+@inject NavigationManager _navManager
+@inject DialogService _dialogService
+@page "/Decks"
+
+@if (_loading)
+{
+    <div class="loaderFlex">
+        <Loader />
+    </div>
+}
+else
+{
+    <div class="decksRootContainer">
+        <div class="decksHeader">
+            <button class="positive" @onclick="OnNewDeckClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">New Deck</button>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
+        {
+            <div class="deckErrorMessage error">
+                @_errorMessage
+            </div>
+        }
+        else
+        {
+            <div class="decksContainer">
+                @foreach (var deck in _decks)
+                {
+                    <div class="deckListing" @onclick="() => OnDeckClicked(deck.Id)">
+                        <div class="deckName">
+                            @deck.SetName
+                        </div>
+                        @if (deck.CardCount >= 1)
+                        {
+                            <div class="deckListingBack deckListingBackOne"></div>
+                        }
+                        @if (deck.CardCount >= 2)
+                        {
+                            <div class="deckListingBack deckListingBackTwo"></div>
+                        }
+                        @if (deck.CardCount >= 3)
+                        {
+                            <div class="deckListingBack deckListingBackThree"></div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}

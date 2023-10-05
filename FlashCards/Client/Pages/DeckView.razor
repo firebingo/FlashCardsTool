@@ -1,0 +1,47 @@
+﻿@using FlashCards.Client.Components
+@inject HttpClient _httpClient
+@inject DialogService _dialogService
+@page "/Decks/{Id}"
+
+@if (_loading)
+{
+    <div class="loaderFlex">
+        <Loader />
+    </div>
+}
+else
+{
+    <div class="cardsRootContainer">
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
+        {
+            <div class="cardErrorMessage error">
+                @_errorMessage
+            </div>
+        }
+        else
+        {
+            <div class="cardsContainer">
+                @foreach (var card in _cards.Cards)
+                {
+                    <div class="cardListing" @onclick="() => CardClicked(card.Id)">
+                        <div class="cardEditIcon" @onclick="() => EditClicked(card.Id)" @onclick:stopPropagation="true">
+                            <FlashCards.Client.Icons.Pencil Fill="#c4c4c4" />
+                        </div>
+                        <div class="@($"cardValues {(card.Flipped ? "cardFlipped" : "")}")">
+                            <div class="cardValueContainer">
+                                <div class="@($"cardValue cardFront {(card.Flipped ? "" : "sideDisplay")}")">
+                                    @card.FrontValue
+                                </div>
+                            </div>
+                            <div class="cardValueContainer">
+                                <div class="@($"cardValue cardBack {(card.Flipped ? "sideDisplay" : "")}")">
+                                    @card.BackValue
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}

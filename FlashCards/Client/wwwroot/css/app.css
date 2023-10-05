@@ -31,6 +31,7 @@ body {
     --mid-bg-color: #343434;
     --dark-bg-color: #303030;
     --base-border-color: rgba(255,255,255,.2);
+    --hover-border-color: rgba(255,255,255,.5);
     --base-link-color: #0096cf;
     --error-color: rgba(210, 0, 0, .8);
     --border-radius: 3px;
@@ -51,6 +52,8 @@ body {
     --button-negative-border-color: #804a41;
     --button-negative-shadow-color: #804a41;
     --button-negative-hover-background: #733b3b;
+    --loader-background: rgba(255,255,255,.7);
+    --loader-foreground: #3b6373;
     --font: "OpenSans", "NotoSansJP", sans-serif, serif;
     --f48: 3rem;
     --f36: 2.25rem;
@@ -87,14 +90,14 @@ body {
 
     .loading-progress circle {
         fill: none;
-        stroke: #e0e0e0;
+        stroke: var(--loader-background);
         stroke-width: 0.6rem;
         transform-origin: 50% 50%;
         transform: rotate(-90deg);
     }
 
         .loading-progress circle:last-child {
-            stroke: #1b6ec2;
+            stroke: var(--loader-foreground);
             stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
             transition: stroke-dasharray 0.05s ease-in-out;
         }
@@ -114,6 +117,10 @@ body {
     color: var(--error-color);
 }
 
+.error {
+    color: var(--error-color);
+}
+
 a {
     color: var(--base-link-color);
 }
@@ -124,7 +131,7 @@ form {
     align-items: center;
 }
 
-input {
+body input {
     font-family: var(--font);
     font-size: var(--f16);
     background: var(--input-background);
@@ -134,14 +141,14 @@ input {
     padding: 1px 2px;
 }
 
-    input:disabled {
+    body input:disabled {
         background: var(--input-background-disabled);
         border: 1px solid var(--input-border-color-disabled);
         color: var(--foreground-color);
         border-radius: var(--border-radius);
     }
 
-    input[type='checkbox'][readonly] {
+    body input[type='checkbox'][readonly] {
         opacity: 0.55;
     }
 
@@ -156,7 +163,7 @@ input {
         font-size: var(--f14);
     }
 
-button {
+body button {
     color: var(--foreground-color);
     padding: 4px 10px;
     border-radius: var(--border-radius);
@@ -164,36 +171,42 @@ button {
     font-family: var(--font);
 }
 
-    button:disabled {
+    body button:disabled {
         opacity: 0.55;
     }
 
-    button.primary {
+    body button.primary {
         background: var(--button-primary-background);
         border: 1px solid var(--button-primary-border);
         box-shadow: inset 1px 1px 5px 0 var(--button-primary-shadow-color);
     }
 
-        button.primary:not(:disabled):hover {
+        body button.primary:not(:disabled):hover {
             background: var(--button-primary-hover-background);
         }
 
-    button.positive {
+    body button.positive {
         background: var(--button-positive-background-color);
         border: 1px solid var(--button-positive-border-color);
         box-shadow: inset 1px 1px 5px 0 var(--button-positive-shadow-color);
     }
 
-        button.positive:not(:disabled):hover {
+        body button.positive:not(:disabled):hover {
             background: var(--button-positive-hover-background);
         }
 
-    button.negative {
+    body button.negative {
         background: var(--button-negative-background-color);
         border: 1px solid var(--button-negative-border-color);
         box-shadow: inset 1px 1px 5px 0 var(--button-negative-shadow-color);
     }
 
-        button.negative:not(:disabled):hover {
+        body button.negative:not(:disabled):hover {
             background: var(--button-negative-hover-background);
         }
+
+.loaderFlex {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}

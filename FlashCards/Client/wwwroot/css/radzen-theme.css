@@ -1,0 +1,13 @@
+﻿body {
+    --rz-dialog-background-color: var(--base-bg-color);
+}
+
+@media only screen and (max-width: 768px) {
+    body .rz-dialog {
+        height: 100%;
+    }
+
+        body .rz-dialog .rz-dialog-content {
+            height: 100%;
+        }
+} 

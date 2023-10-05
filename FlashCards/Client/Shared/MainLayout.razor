@@ -2,9 +2,10 @@
 @inherits LayoutComponentBase
 @inject NavigationManager _navManager
 
+<RadzenDialog />
 <div id="root">
     <div class="rootContainer">
-        @if (_navManager.Uri.Contains("Login"))
+        @if (_navManager.Uri.Contains("Login") || _navManager.Uri.Contains("Register"))
         {
             <div class="routeContainer">
                 @Body

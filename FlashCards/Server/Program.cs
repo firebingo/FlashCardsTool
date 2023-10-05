@@ -18,10 +18,8 @@ using NLog.Targets;
 using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
-using ZstdSharp.Unsafe;
 
 namespace FlashCards
 {

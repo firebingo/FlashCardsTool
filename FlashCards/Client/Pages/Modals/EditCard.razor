@@ -1,0 +1,108 @@
+﻿@using FlashCards.Shared.ViewModels;
+@using Radzen;
+@using System.Text.Json;
+@using System.ComponentModel.DataAnnotations;
+@using System.Text;
+@inject DialogService _dialogService
+@inject HttpClient _httpClient
+
+<ModalBase Title="New Deck" CloseCallback="OnClose">
+    <ModalBody>
+        <div class="inputField">
+            <label>Front:</label>
+            <textarea @bind="_formModel!.FrontValue" @bind:event="oninput" />
+        </div>
+        <div class="inputField">
+            <label>Front:</label>
+            <textarea @bind="_formModel!.BackValue" @bind:event="oninput" />
+        </div>
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="baseModalError error">
+                @_error
+            </div>
+        }
+    </ModalBody>
+    <ModalButtons>
+        <button class="positive" disabled="@_loading" @onclick="Submit">Save</button>
+    </ModalButtons>
+</ModalBase>
+
+@code {
+    [Parameter]
+    public Func<CardView?, Task>? CompleteCallback { get; set; }
+    [Parameter]
+    public long SetId { get; set; } = 0;
+    [Parameter]
+    public CardView Card { get; set; } = new CardView();
+
+    FormModel? _formModel { get; set; }
+    string _error { get; set; } = string.Empty;
+    bool _loading { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _formModel ??= new FormModel()
+            {
+                FrontValue = Card.FrontValue ?? string.Empty,
+                BackValue = Card.BackValue ?? string.Empty
+            };
+    }
+
+    async Task Submit()
+    {
+        await UpdateCard();
+    }
+
+    async Task UpdateCard()
+    {
+        _loading = true;
+        _error = string.Empty;
+        var postModel = new EditCardsRequest()
+            {
+                SetId = SetId,
+                Cards = new List<EditCardsCard>()
+            {
+                new EditCardsCard()
+                {
+                    Id = Card.Id,
+                    FrontValue = _formModel!.FrontValue,
+                    BackValue = _formModel!.BackValue
+                }
+            }
+            };
+        using var content = new StringContent(JsonSerializer.Serialize(postModel, DefaultJsonOptions.DefaultOptions), Encoding.UTF8, "application/json");
+        using var res = await _httpClient.PatchAsync("/api/card/EditCards", content);
+        var resS = await res.Content.ReadAsStringAsync();
+        if (!res.IsSuccessStatusCode || string.IsNullOrWhiteSpace(resS) || !resS.StartsWith('{'))
+        {
+            _error = $"Error editing card. ({res.StatusCode})";
+            _loading = false;
+            return;
+        }
+        var result = JsonSerializer.Deserialize<StandardResponse<CardsView>>(resS, DefaultJsonOptions.DefaultOptions);
+        if (result?.Success != true || result?.Data == null)
+        {
+            _error = $"Error editing card. ({res.StatusCode})";
+            _loading = false;
+            return;
+        }
+        var newCard = result.Data.Cards.FirstOrDefault(x => x.Id == Card.Id);
+
+        _loading = false;
+        _dialogService.Close();
+        if (CompleteCallback != null)
+            await CompleteCallback(newCard);
+    }
+
+    void OnClose()
+    {
+        _dialogService.Close();
+    }
+
+    class FormModel
+    {
+        public string FrontValue { get; set; } = string.Empty;
+        public string BackValue { get; set; } = string.Empty;
+    }
+}
