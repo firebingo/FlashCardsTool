@@ -3,7 +3,9 @@
 @inject HttpClient _httpClient
 
 <div class="header">
-    <button class="headerButton" @onclick="OnMenuClicked">☰</button>
+    <button class="headerButton" @onclick="OnMenuClicked">
+        <span class="symbol">menu</span>
+    </button>
     <div class="headerUserName">
         <div>@_userName</div>
         <button class="negative" @onclick="OnSignOutClicked">Logout</button>

@@ -5,6 +5,7 @@ using FlashCards.Shared.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -83,7 +84,29 @@ namespace FlashCards.Client.Pages
 
 		private void OnDeckClicked(long id)
 		{
-			_navManager.NavigateTo($"/Decks/{id}");
+			var deck = _decks.FirstOrDefault(x => x.Id == id);
+			if (deck != null)
+				_navManager.NavigateTo($"/Decks/{id}");
+		}
+
+		private async Task OnDeckDeleteClicked(long id)
+		{
+			var deck = _decks.FirstOrDefault(x => x.Id == id);
+			if (deck == null)
+				return;
+
+			await _dialogService.OpenAsync<ConfirmDeleteDeck>("ConfirmDeleteDeck",
+				new Dictionary<string, object>()
+				{
+					{ "Deck", deck },
+					{ "CompleteCallback", () => OnNewDeckComplete() }
+				},
+				new DialogOptions()
+				{
+					ShowTitle = false,
+					ShowClose = false,
+					CloseDialogOnOverlayClick = true
+				});
 		}
 	}
 }

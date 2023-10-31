@@ -1,5 +1,6 @@
 ﻿@using FlashCards.Client.Components
 @inject HttpClient _httpClient
+@inject NavigationManager _navManager
 @inject DialogService _dialogService
 @page "/Decks/{Id}"
 
@@ -12,9 +13,14 @@
 else
 {
     <div class="cardsRootContainer">
+        <div class="cardsHeader">
+            <button class="positive" @onclick="NewCardClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Add Card</button>
+            <button class="positive" @onclick="OnPlayClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Play</button>
+            <button class="positive" @onclick="() => {}" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">History</button>
+        </div>
         @if (!string.IsNullOrWhiteSpace(_errorMessage))
         {
-            <div class="cardErrorMessage error">
+            <div class="marginAuto error">
                 @_errorMessage
             </div>
         }
@@ -24,21 +30,42 @@ else
                 @foreach (var card in _cards.Cards)
                 {
                     <div class="cardListing" @onclick="() => CardClicked(card.Id)">
-                        <div class="cardEditIcon" @onclick="() => EditClicked(card.Id)" @onclick:stopPropagation="true">
-                            <FlashCards.Client.Icons.Pencil Fill="#c4c4c4" />
-                        </div>
-                        <div class="@($"cardValues {(card.Flipped ? "cardFlipped" : "")}")">
-                            <div class="cardValueContainer">
-                                <div class="@($"cardValue cardFront {(card.Flipped ? "" : "sideDisplay")}")">
-                                    @card.FrontValue
+                        @if (card.Loading)
+                        {
+                            <div class="cardLoading">
+                                <Loader />
+                            </div>
+                        }
+                        else
+                        {
+                            @if (!card.DeleteConfirm)
+                            {
+                                <div class="cardDeleteIcon" @onclick="() => DeleteClicked(card.Id)" @onclick:stopPropagation="true">
+                                    <span class="symbol">delete</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="cardDeleteIcon" @onclick="() => ConfirmDeleteClicked(card.Id)" @onclick:stopPropagation="true">
+                                    <span class="symbol">delete_forever</span>
+                                </div>
+                            }
+                            <div class="cardEditIcon" @onclick="() => EditClicked(card.Id)" @onclick:stopPropagation="true">
+                                <span class="symbol">edit_note</span>
+                            </div>
+                            <div class="@($"cardValues {(card.Flipped ? "cardFlipped" : "")}")">
+                                <div class="cardValueContainer">
+                                    <div class="@($"cardValue cardFront {(card.Flipped ? "" : "sideDisplay")}")">
+                                        @card.FrontValue
+                                    </div>
+                                </div>
+                                <div class="cardValueContainer">
+                                    <div class="@($"cardValue cardBack {(card.Flipped ? "sideDisplay" : "")}")">
+                                        @card.BackValue
+                                    </div>
                                 </div>
                             </div>
-                            <div class="cardValueContainer">
-                                <div class="@($"cardValue cardBack {(card.Flipped ? "sideDisplay" : "")}")">
-                                    @card.BackValue
-                                </div>
-                            </div>
-                        </div>
+                        }
                     </div>
                 }
             </div>

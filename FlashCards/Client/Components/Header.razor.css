@@ -9,11 +9,17 @@
 .headerButton {
     background: none;
     border: none;
-    color: var(--base-font-color);
-    font-size: var(--f28);
-    line-height: var(--f28);
     margin-left: 8px;
+    cursor: pointer;
 }
+
+    .headerButton span {
+        font-size: var(--f28);
+    }
+
+    .headerButton:hover span {
+        color: var(--hover-font-color);
+    }
 
 .headerUserName {
     display: flex;
@@ -21,6 +27,6 @@
     margin: auto 12px auto auto;
 }
 
-.headerUserName button {
-    margin-left: 8px;
-}
+    .headerUserName button {
+        margin-left: 8px;
+    }

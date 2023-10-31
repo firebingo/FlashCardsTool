@@ -224,6 +224,8 @@ namespace FlashCards.Server.Services
 				await _dbContext.SaveChangesAsync();
 				var ret = new CardsView()
 				{
+					SetId = cardSet.Id,
+					SetName = cardSet.SetName,
 					Cards = newCards
 						.Select(x => new CardView()
 						{
@@ -270,6 +272,8 @@ namespace FlashCards.Server.Services
 				{
 					Data = new CardsView()
 					{
+						SetId = set.Id,
+						SetName = set.SetName,
 						Cards = set.Cards.Select(x => new CardView()
 						{
 							Id = x.Id,
@@ -337,6 +341,8 @@ namespace FlashCards.Server.Services
 				{
 					Data = new CardsView()
 					{
+						SetId = set.Id,
+						SetName = set.SetName,
 						Cards = retCards
 					}
 				};

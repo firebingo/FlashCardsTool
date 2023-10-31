@@ -1,0 +1,76 @@
+﻿@using FlashCards.Shared.ViewModels;
+@using Radzen;
+@using System.Text.Json;
+@using System.ComponentModel.DataAnnotations;
+@using System.Text;
+@inject DialogService _dialogService
+@inject HttpClient _httpClient
+
+<ModalBase Title="Delete Deck" CloseCallback="OnClose">
+    <ModalBody>
+        <div class="modalWrapText">
+            @($"Are you sure you want to delete deck {Deck?.SetName}? This deck contains {Deck?.CardCount} cards.")
+        </div>
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="baseModalError error">
+                @_error
+            </div>
+        }
+    </ModalBody>
+    <ModalButtons>
+        <button class="primary buttonLeft" disabled="@_loading" @onclick="OnClose">Cancel</button>
+        <button class="negative" disabled="@_loading" @onclick="Submit">Delete</button>
+    </ModalButtons>
+</ModalBase>
+
+@code {
+    [Parameter]
+    public Func<Task>? CompleteCallback { get; set; }
+    [Parameter]
+    public CardSetView Deck { get; set; } = new CardSetView();
+
+    string _error { get; set; } = string.Empty;
+    bool _loading { get; set; }
+
+    protected override void OnInitialized()
+    {
+        
+    }
+
+    async Task Submit()
+    {
+        await DeleteDeck();
+    }
+
+    async Task DeleteDeck()
+    {
+        _loading = true;
+        _error = string.Empty;
+        using var res = await _httpClient.DeleteAsync($"/api/card/DeleteCardSet/{Deck.Id}");
+        var resS = await res.Content.ReadAsStringAsync();
+        if (!res.IsSuccessStatusCode || string.IsNullOrWhiteSpace(resS) || !resS.StartsWith('{'))
+        {
+            _error = $"Error deleting deck. ({res.StatusCode})";
+            _loading = false;
+            return;
+        }
+        var result = JsonSerializer.Deserialize<StandardResponse<CardSetView>>(resS, DefaultJsonOptions.DefaultOptions);
+        if (result?.Success != true)
+        {
+            _error = $"Error deleting deck. ({res.StatusCode})";
+            _loading = false;
+            return;
+        }
+
+        _loading = false;
+        _dialogService.Close();
+        if (CompleteCallback != null)
+            await CompleteCallback();
+    }
+
+    void OnClose()
+    {
+        _dialogService.Close();
+    }
+}

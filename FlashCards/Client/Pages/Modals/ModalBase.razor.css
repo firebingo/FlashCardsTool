@@ -41,6 +41,14 @@
     height: 80px;
 }
 
+::deep .modalWrapText {
+    word-wrap: break-word;
+}
+
+::deep .buttonLeft {
+    margin-right: auto;
+}
+
 @media only screen and (max-width: 768px) {
     .baseModal {
         height: 100%;
@@ -51,4 +59,33 @@
     .baseModalBody {
         height: 100%;
     }
-} 
+}
+
+.closeButton {
+    position: absolute;
+    right: 0;
+    background-image: none;
+    border: 0;
+    border-radius: 20px;
+    padding: 0;
+    background-color: transparent;
+    cursor: pointer;
+    width: var(--f28);
+    height: var(--f28);
+}
+
+    .closeButton span {
+        font-size: var(--f28);
+        font-variation-settings: 'wght' 300;
+    }
+
+    .closeButton:hover span {
+        color: var(--hover-font-color);
+    }
+
+/*    .closeButton ::deep svg {
+        display: block;
+        margin: auto;
+        opacity: 0.75;
+        width: 25px;
+    }*/

@@ -18,7 +18,7 @@ else
         </div>
         @if (!string.IsNullOrWhiteSpace(_errorMessage))
         {
-            <div class="deckErrorMessage error">
+            <div class="marginAuto error">
                 @_errorMessage
             </div>
         }
@@ -28,6 +28,9 @@ else
                 @foreach (var deck in _decks)
                 {
                     <div class="deckListing" @onclick="() => OnDeckClicked(deck.Id)">
+                        <div class="deckDeleteIcon" @onclick="() => OnDeckDeleteClicked(deck.Id)" @onclick:stopPropagation="true">
+                            <span class="symbol">delete_forever</span>
+                        </div>
                         <div class="deckName">
                             @deck.SetName
                         </div>

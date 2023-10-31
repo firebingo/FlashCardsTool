@@ -1,9 +1,21 @@
 ﻿body {
     --rz-dialog-background-color: var(--base-bg-color);
+    --rz-switch-background-color: var(--input-foreground);
+    --rz-switch-checked-background-color: var(--input-foreground);
+    --rz-switch-circle-background-color: var(--hover-font-color);
+    --rz-switch-checked-circle-background-color: var(--button-positive-hover-background);
 }
 
-@media only screen and (max-width: 768px) {
-    body .rz-dialog {
+    body .rz-switch .rz-switch-circle:hover:not(.rz-disabled):before {
+        box-shadow: none;
+    }
+
+    body .rz-switch.rz-switch-checked .rz-switch-circle:hover:not(.rz-disabled):before {
+        box-shadow: none;
+    }
+
+    @media only screen and (max-width: 768px) {
+        body .rz-dialog {
         height: 100%;
     }
 

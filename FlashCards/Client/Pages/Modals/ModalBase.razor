@@ -3,7 +3,7 @@
 <div class="baseModal">
     <div class="baseModalHeader">
         <h3>@Title</h3>
-        <CloseButton CloseCallback="CloseCallback"/>
+        <button @onclick="CloseCallback" class="closeButton"><span class="symbol">cancel</span></button>
     </div>
     <div class="baseModalBody">
         @ModalBody

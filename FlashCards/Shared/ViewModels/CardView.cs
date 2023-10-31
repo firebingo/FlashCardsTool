@@ -6,6 +6,8 @@ namespace FlashCards.Shared.ViewModels
 {
 	public class CardsView
 	{
+		public long SetId { get; set; }
+		public string SetName { get; set; } = string.Empty;
 		public List<CardView> Cards { get; set; } = new List<CardView>();
 	}
 
@@ -17,5 +19,9 @@ namespace FlashCards.Shared.ViewModels
 		public DateTime ModifiedTime { get; set; }
 		[JsonIgnore]
 		public bool Flipped { get; set; }
+		[JsonIgnore]
+		public bool DeleteConfirm { get; set; }
+		[JsonIgnore]
+		public bool Loading { get; set; }
 	}
 }

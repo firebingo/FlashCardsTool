@@ -1,37 +1,87 @@
-﻿.cardsRootContainer {
+﻿.gameRootContainer {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.cardsHeader {
+.gameHeader {
     height: 35px;
     display: flex;
     align-items: center;
     margin-bottom: 10px;
 }
 
-    .cardsHeader button {
+    .gameHeader button {
         margin-right: 8px;
     }
 
-    .cardsContainer {
+    .prepContainer {
         height: 100%;
         width: 100%;
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
         position: relative;
-        align-content: flex-start;
+        align-items: center;
     }
 
+.prepOptions {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+    .prepOptions button {
+        align-self: center;
+    }
+
+.gameContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+}
+
+.gameElementsContainer {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+}
+
+.gameConfirmButtons {
+    display: flex;
+    margin-top: 8px;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+    .gameConfirmButtons button {
+        width: 140px;
+        line-height: 1;
+    }
+
+        .gameConfirmButtons button span {
+            font-size: var(--f28);
+        }
+
+.gameTimer {
+    
+}
+
+.inputField {
+    padding: 4px;
+}
+
+.inputCheckField {
+    padding: 4px;
+}
+
 .cardListing {
-    width: 265px;
-    height: 166px;
+    width: 320px;
+    height: 200px;
     background-color: var(--base-bg-color);
     display: flex;
-    margin-right: 10px;
-    margin-bottom: 10px;
     position: relative;
     cursor: pointer;
 }
@@ -39,14 +89,6 @@
     .cardListing:hover .cardValues {
         border-color: var(--hover-border-color);
     }
-
-.cardLoading {
-    border: 1px solid var(--base-border-color);
-    border-radius: var(--large-border-radius);
-    width: 100%;
-    height: 100%;
-    display: flex;
-}
 
 .cardValues {
     border: 1px solid var(--base-border-color);
@@ -70,7 +112,7 @@
 
 .cardValue {
     max-height: 100%;
-    font-size: var(--f20);
+    font-size: var(--f22);
     text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -89,48 +131,14 @@
     transform: rotate3d(0,1,0,180deg);
 }
 
-.cardEditIcon {
-    position: absolute;
-    right: 4px;
-    top: 4px;
-    width: var(--f22);
-    height: var(--f22);
-    z-index: 1;
+.resultsContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-    .cardEditIcon span {
-        font-size: var(--f22);
-    }
-
-    .cardEditIcon:hover span {
-        color: var(--hover-font-color);
-    }
-
-.cardDeleteIcon {
-    position: absolute;
-    left: 4px;
-    top: 4px;
-    width: var(--f22);
-    height: var(--f22);
-    z-index: 1;
-}
-
-    .cardDeleteIcon span {
-        font-size: var(--f22);
-    }
-
-    .cardDeleteIcon:hover span {
-        color: var(--error-color);
-    }
-
-@media only screen and (max-width: 768px) {
-    .cardsContainer {
-        overflow: auto;
-    }
-
-    .cardListing {
-        width: 100%;
-        margin-right: 0;
-        overflow: hidden;
-    }
+.resultsList {
+    margin: auto;
 }

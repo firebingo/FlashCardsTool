@@ -21,10 +21,6 @@
     align-content: flex-start;
 }
 
-.deckErrorMessage {
-    margin: auto;
-}
-
 .deckListing {
     width: 265px;
     height: 166px;
@@ -77,6 +73,23 @@
     text-overflow: ellipsis;
     padding: 8px;
 }
+
+.deckDeleteIcon {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: var(--f22);
+    height: var(--f22);
+    z-index: 1;
+}
+
+    .deckDeleteIcon span {
+        font-size: var(--f22);
+    }
+
+    .deckDeleteIcon:hover span {
+        color: var(--error-color);
+    }
 
 @media only screen and (max-width: 768px) {
     .decksContainer {

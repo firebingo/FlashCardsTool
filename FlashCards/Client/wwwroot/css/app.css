@@ -12,6 +12,32 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    src: url("../fonts/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].woff2");
+}
+
+
+.symbol {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: var(--f20);
+    color: var(--base-font-color);
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 html {
     display: flex;
     height: 100%;
@@ -27,6 +53,7 @@ body {
     font-family: var(--font);
     font-size: var(--f16);
     --base-font-color: rgba(255,255,255,.7);
+    --hover-font-color: rgba(255,255,255,.9);
     --base-bg-color: #393939;
     --mid-bg-color: #343434;
     --dark-bg-color: #303030;
@@ -37,6 +64,7 @@ body {
     --border-radius: 3px;
     --large-border-radius: 7px;
     --input-background: var(--dark-bg-color);
+    --input-foreground: var(--base-font-color);
     --input-border-color: #777;
     --input-background-disabled: transparent;
     --input-border-color-disabled: transparent;
@@ -121,6 +149,10 @@ body {
     color: var(--error-color);
 }
 
+.marginAuto {
+    margin: auto;
+}
+
 a {
     color: var(--base-link-color);
 }
@@ -136,7 +168,7 @@ body input {
     font-size: var(--f16);
     background: var(--input-background);
     border: 1px solid var(--input-border-color);
-    color: var(--foreground-color);
+    color: var(--input-foreground);
     border-radius: var(--border-radius);
     padding: 1px 2px;
 }
@@ -144,13 +176,23 @@ body input {
     body input:disabled {
         background: var(--input-background-disabled);
         border: 1px solid var(--input-border-color-disabled);
-        color: var(--foreground-color);
+        color: var(--input-foreground);
         border-radius: var(--border-radius);
     }
 
     body input[type='checkbox'][readonly] {
         opacity: 0.55;
     }
+
+body select {
+    font-family: var(--font);
+    font-size: var(--f16);
+    background: var(--input-background);
+    border: 1px solid var(--input-border-color);
+    color: var(--input-foreground);
+    border-radius: var(--border-radius);
+    padding: 1px 2px;
+}
 
 .inputField {
     display: flex;
@@ -163,8 +205,28 @@ body input {
         font-size: var(--f14);
     }
 
+.inputCheckField {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+    .inputCheckField label {
+        margin-right: 4px;
+    }
+
+body textarea {
+    font-family: var(--font);
+    font-size: var(--f16);
+    background: var(--input-background);
+    border: 1px solid var(--input-border-color);
+    color: var(--input-foreground);
+    border-radius: var(--border-radius);
+    padding: 1px 2px;
+}
+
 body button {
-    color: var(--foreground-color);
+    color: var(--input-foreground);
     padding: 4px 10px;
     border-radius: var(--border-radius);
     font-size: var(--f16);
