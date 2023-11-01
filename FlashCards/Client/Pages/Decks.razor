@@ -29,7 +29,7 @@ else
                 {
                     <div class="deckListing" @onclick="() => OnDeckClicked(deck.Id)">
                         <div class="deckDeleteIcon" @onclick="() => OnDeckDeleteClicked(deck.Id)" @onclick:stopPropagation="true">
-                            <span class="symbol">delete_forever</span>
+                            <span class="symbol">delete</span>
                         </div>
                         <div class="deckName">
                             @deck.SetName

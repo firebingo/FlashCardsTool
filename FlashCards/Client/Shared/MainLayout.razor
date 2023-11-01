@@ -1,6 +1,10 @@
 ﻿@using FlashCards.Client.Components
+@using FlashCards.Client.Models;
+@using System.Text.Json;
+@implements IDisposable
 @inherits LayoutComponentBase
 @inject NavigationManager _navManager
+@inject IJSRuntime _jsRuntime
 
 <RadzenDialog />
 <div id="root">
@@ -30,4 +34,37 @@
 
 @code {
     bool MenuOpen { get; set; } = true;
+
+    protected override void OnInitialized()
+    {
+        _navManager.LocationChanged += LocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var dimensions = await _jsRuntime.InvokeAsync<WindowDimensions>("getDimensions");
+            if (dimensions.Width <= 768)
+            {
+                MenuOpen = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    async void LocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        var dimensions = await _jsRuntime.InvokeAsync<WindowDimensions>("getDimensions");
+        if (dimensions.Width <= 768)
+        {
+            MenuOpen = false;
+            StateHasChanged();
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        _navManager.LocationChanged -= LocationChanged;
+    }
 }

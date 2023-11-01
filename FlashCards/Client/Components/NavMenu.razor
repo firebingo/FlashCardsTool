@@ -2,7 +2,7 @@
 @inject HttpClient _httpClient
 
 <div class="@MenuClass">
-    @foreach(var item in _navitems)
+    @foreach (var item in _navitems)
     {
         <div class="navItem">
             <NavLink href="@item.Url">
@@ -26,7 +26,7 @@
     protected override async Task OnInitializedAsync()
     {
         using var authRes = await _httpClient.GetAsync("api/Account/CheckUserAuth");
-        if(!authRes.IsSuccessStatusCode)
+        if (!authRes.IsSuccessStatusCode)
             _navManager.NavigateTo("/Login");
 
         _navitems.Add(new NavItem()
@@ -39,11 +39,6 @@
                 Text = "Account",
                 Url = "/Account"
             });
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        var uri = _navManager.ToBaseRelativePath(_navManager.Uri);
     }
 
     class NavItem

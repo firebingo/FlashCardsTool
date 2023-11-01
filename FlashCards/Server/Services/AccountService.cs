@@ -37,7 +37,7 @@ namespace FlashCards.Server.Services
 			{
 				var userName = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
 				var email = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
-				if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(email))
+				if (string.IsNullOrWhiteSpace(userName))
 				{
 					_logger.LogWarning($"Failed to get user claims: AccountService.GetUserHeaderInfo({context?.User?.Identity?.Name})");
 					return new StandardResponse<UserHeaderInfoResponse>()
@@ -52,7 +52,7 @@ namespace FlashCards.Server.Services
 					Data = new UserHeaderInfoResponse()
 					{
 						Email = email,
-						UserName = userName,
+						UserName = userName!,
 					}
 				};
 			}

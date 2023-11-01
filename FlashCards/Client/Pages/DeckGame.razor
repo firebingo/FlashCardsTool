@@ -27,7 +27,7 @@ else
             else if (!_prep && _results)
             {
                 <button class="negative" @onclick="OnCancelClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Discard</button>
-                <button class="positive" @onclick="OnCancelClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Save Result</button>
+                <button class="positive" @onclick="OnSaveClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Save Result</button>
             }
         </div>
         @if (!string.IsNullOrWhiteSpace(_errorMessage))

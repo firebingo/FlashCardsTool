@@ -35,6 +35,7 @@ obj/
 packages/
 .vs/
 .config/
+Build/
 
 # =========================
 # Operating System Files

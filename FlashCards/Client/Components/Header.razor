@@ -13,8 +13,6 @@
 </div>
 
 @code {
-    private bool _menuOpenValue;
-
     [Parameter]
     public EventCallback<bool> MenuOpenChanged { get; set; }
 
@@ -23,10 +21,10 @@
 
     public bool MenuOpenValue
     {
-        get => _menuOpenValue;
+        get => MenuOpen;
         set
         {
-            _menuOpenValue = value;
+            MenuOpen = value;
             MenuOpenChanged.InvokeAsync(value);
         }
     }
@@ -35,7 +33,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _menuOpenValue = MenuOpen;
         using var infoRes = await _httpClient.GetAsync("/api/Account/GetUserHeaderInfo");
         var infoResS = await infoRes.Content.ReadAsStringAsync();
         if (!infoRes.IsSuccessStatusCode || string.IsNullOrWhiteSpace(infoResS) || !infoResS.StartsWith('{'))

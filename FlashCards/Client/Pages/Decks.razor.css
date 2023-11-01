@@ -19,6 +19,7 @@
     flex-wrap: wrap;
     position: relative;
     align-content: flex-start;
+    overflow: auto;
 }
 
 .deckListing {
