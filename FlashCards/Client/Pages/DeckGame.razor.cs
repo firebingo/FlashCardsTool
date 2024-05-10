@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Timers;
@@ -34,7 +33,8 @@ namespace FlashCards.Client.Pages
 		private List<OrderOption> _orderOptions = new List<OrderOption>();
 		public OrderOptionValue SelectOrderOption { get; set; }
 		public bool Shuffle { get; set; }
-		public bool Timer { get; set; }		
+		public bool Timer { get; set; }
+		public bool Flipped { get; set; }
 
 		protected override async Task OnInitializedAsync()
 		{
@@ -93,6 +93,8 @@ namespace FlashCards.Client.Pages
 				_cards.Reverse();
 			if (Shuffle)
 				_cards = _cards.OrderBy(x => Random.Shared.Next()).OrderByDescending(x => Random.Shared.Next()).ToList();
+			if (Flipped)
+				_cards.ForEach(x => x.Flipped = true);
 			_startTime = DateTime.UtcNow;
 			_currentIndex = 0;
 			_currentCard = _cards[0];
