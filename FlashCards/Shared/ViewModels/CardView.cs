@@ -8,7 +8,7 @@ namespace FlashCards.Shared.ViewModels
 	{
 		public long SetId { get; set; }
 		public string SetName { get; set; } = string.Empty;
-		public List<CardView> Cards { get; set; } = new List<CardView>();
+		public List<CardView> Cards { get; set; } = [];
 	}
 
 	public class CardView

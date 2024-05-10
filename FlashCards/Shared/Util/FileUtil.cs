@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -15,7 +14,7 @@ namespace FlashCards.Shared.Util
 			{
 				stream = assembly.GetManifestResourceStream(resource);
 				if (stream == null)
-					return Array.Empty<string>();
+					return [];
 
 				var result = new List<string>();
 				using StreamReader reader = new StreamReader(stream);
@@ -25,11 +24,11 @@ namespace FlashCards.Shared.Util
 					result.Add(s);
 				}
 
-				return result.ToArray();
+				return [.. result];
 			}
 			catch
 			{
-				return Array.Empty<string>();
+				return [];
 			}
 			finally
 			{

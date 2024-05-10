@@ -15,7 +15,7 @@ namespace FlashCards.Client.Pages
 	{
 		private bool _loading;
 		private string _errorMessage = string.Empty;
-		private List<CardSetView> _decks = new List<CardSetView>();
+		private List<CardSetView> _decks = [];
 
 		protected override void OnInitialized()
 		{

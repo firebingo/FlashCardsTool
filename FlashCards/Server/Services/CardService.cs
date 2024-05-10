@@ -1,11 +1,9 @@
-﻿using FlashCards.Server.Configuration;
-using FlashCards.Server.Data;
+﻿using FlashCards.Server.Data;
 using FlashCards.Server.Data.Models;
 using FlashCards.Shared.Models;
 using FlashCards.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +14,11 @@ namespace FlashCards.Server.Services
 {
 	public class CardService
 	{
-		readonly AppSettings _appSettings;
 		readonly ILogger<CardService> _logger;
 		readonly ServiceDbContext _dbContext;
 
-		public CardService(IOptions<AppSettings> appSettings, ILogger<CardService> logger, ServiceDbContext dbContext)
+		public CardService(ILogger<CardService> logger, ServiceDbContext dbContext)
 		{
-			_appSettings = appSettings.Value;
 			_logger = logger;
 			_dbContext = dbContext;
 		}

@@ -58,9 +58,9 @@ namespace FlashCards.Server.Auth
 			await httpContext.SignOutAsync();
 		}
 
-		private static IEnumerable<Claim> GetUserClaims(User user)
+		private static List<Claim> GetUserClaims(User user)
 		{
-			List<Claim> claims = new List<Claim>
+			var claims = new List<Claim>
 			{
 				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 				new Claim(ClaimTypes.Name, user.UserName),
@@ -70,9 +70,9 @@ namespace FlashCards.Server.Auth
 			return claims;
 		}
 
-		private static IEnumerable<Claim> GetUserRoleClaims(User user)
+		private static List<Claim> GetUserRoleClaims(User user)
 		{
-			List<Claim> claims = new List<Claim>
+			var claims = new List<Claim>
 			{
 				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
 			};

@@ -183,10 +183,10 @@ namespace FlashCards.Client.Pages
 			var postModel = new DeleteCardsRequest()
 			{
 				SetId = _id,
-				Cards = new List<DeleteCardsCard>()
-				{
+				Cards =
+				[
 					new DeleteCardsCard() { Id = id }
-				}
+				]
 			};
 			using var content = new StringContent(JsonSerializer.Serialize(postModel, DefaultJsonOptions.DefaultOptions), Encoding.UTF8, "application/json");
 			using var request = new HttpRequestMessage

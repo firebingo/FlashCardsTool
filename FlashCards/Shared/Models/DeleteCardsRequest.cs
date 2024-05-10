@@ -8,7 +8,7 @@ namespace FlashCards.Shared.Models
 		public long SetId { get; set; }
 		[JsonIgnore]
 		public long UserId { get; set; }
-		public List<DeleteCardsCard> Cards { get; set; } = new List<DeleteCardsCard>();
+		public List<DeleteCardsCard> Cards { get; set; } = [];
 	}
 
 	public class DeleteCardsCard

@@ -29,8 +29,8 @@ namespace FlashCards.Client.Pages
 		private Timer? _timerInterval;
 		private CardViewGame _currentCard = new CardViewGame();
 		private CardsView _sourceCards = new CardsView();
-		private List<CardViewGame> _cards = new List<CardViewGame>();
-		private List<OrderOption> _orderOptions = new List<OrderOption>();
+		private List<CardViewGame> _cards = [];
+		private List<OrderOption> _orderOptions = [];
 		public OrderOptionValue SelectOrderOption { get; set; }
 		public bool Shuffle { get; set; }
 		public bool Timer { get; set; }
@@ -50,8 +50,8 @@ namespace FlashCards.Client.Pages
 					_id = l;
 				}
 
-				_orderOptions = new List<OrderOption>()
-				{
+				_orderOptions =
+				[
 					new OrderOption()
 					{
 						Name = "Normal",
@@ -62,7 +62,7 @@ namespace FlashCards.Client.Pages
 						Name = "Reverse",
 						Value = OrderOptionValue.Reverse
 					}
-				};
+				];
 
 				using var getCardsRes = await _httpClient.GetAsync($"/api/Card/GetCardsForSet/{_id}");
 				var cardsS = await getCardsRes.Content.ReadAsStringAsync();
@@ -92,7 +92,7 @@ namespace FlashCards.Client.Pages
 			if (SelectOrderOption == OrderOptionValue.Reverse)
 				_cards.Reverse();
 			if (Shuffle)
-				_cards = _cards.OrderBy(x => Random.Shared.Next()).OrderByDescending(x => Random.Shared.Next()).ToList();
+				_cards = [.. _cards.OrderBy(x => Random.Shared.Next()).OrderByDescending(x => Random.Shared.Next())];
 			if (Flipped)
 				_cards.ForEach(x => x.Flipped = true);
 			_startTime = DateTime.UtcNow;

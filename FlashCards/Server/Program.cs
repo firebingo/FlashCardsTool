@@ -50,7 +50,7 @@ namespace FlashCards
 				builder.Services.AddResponseCompression(options =>
 				{
 					options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-						new[] { "application/x-font-ttf" });
+						["application/x-font-ttf"]);
 					options.EnableForHttps = true;
 				});
 			}
