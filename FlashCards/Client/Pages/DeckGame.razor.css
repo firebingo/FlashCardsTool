@@ -116,11 +116,12 @@
     text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: pre-wrap;
+    white-space: break-spaces;
     padding: 8px;
     margin: auto;
     opacity: 0;
     transition: opacity ease-in-out 0.125s, transform ease-in-out 0.25s;
+    user-select: none;
 }
 
 .sideDisplay {

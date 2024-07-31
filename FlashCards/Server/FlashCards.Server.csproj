@@ -19,12 +19,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="IdGen" Version="3.0.5" />
-		<PackageReference Include="IdGen.DependencyInjection" Version="3.0.5" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.4" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.4" />
-		<PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.2" />
+		<PackageReference Include="IdGen" Version="3.0.7" />
+		<PackageReference Include="IdGen.DependencyInjection" Version="3.0.7" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.7" />
+		<PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.5" />
 		<PackageReference Include="NLog" Version="5.3.2" />
 		<PackageReference Include="NLog.Database" Version="5.3.2" />
 		<PackageReference Include="NLog.Web.AspNetCore" Version="5.3.11" />
