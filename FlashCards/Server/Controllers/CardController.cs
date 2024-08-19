@@ -56,6 +56,37 @@ namespace FlashCards.Server.Controllers
 			}
 		}
 
+		[HttpGet("[action]/{setId}")]
+		[Authorize]
+		public async Task<IActionResult> GetCardSet([FromRoute] long setId)
+		{
+			try
+			{
+				if (!AuthHelper.GetUserIdFromContextUser(HttpContext.User, out var userId))
+				{
+					return Unauthorized(new StandardResponse()
+					{
+						Success = false,
+						StatusCode = System.Net.HttpStatusCode.Unauthorized,
+						Message = "UNAUTHORIZED"
+					});
+				}
+
+				var res = await _cardService.GetCardSet(setId, userId);
+				return StatusCode((int)res.StatusCode, res);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception in CardController:GetCardSet({setId})");
+				return StatusCode(500, new StandardResponse()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.Unauthorized,
+					Message = "EXCEPTION"
+				});
+			}
+		}
+
 		[HttpGet("[action]")]
 		[Authorize]
 		public async Task<IActionResult> GetCardSets()

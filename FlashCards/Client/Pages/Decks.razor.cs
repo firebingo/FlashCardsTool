@@ -30,7 +30,7 @@ namespace FlashCards.Client.Pages
 			}
 		}
 
-		private async Task LoadDecks()
+		private async Task LoadDecks(bool background = false)
 		{
 			_loading = true;
 			_errorMessage = string.Empty;
@@ -58,7 +58,10 @@ namespace FlashCards.Client.Pages
 			finally
 			{
 				_loading = false;
-				StateHasChanged();
+				if (background)
+					await InvokeAsync(StateHasChanged);
+				else
+					StateHasChanged();
 			}
 		}
 
@@ -80,6 +83,40 @@ namespace FlashCards.Client.Pages
 		private async Task OnNewDeckComplete()
 		{
 			await LoadDecks();
+		}
+
+		private Task OnDeckEditComplete(long id, string name)
+		{
+			var oldDeck = _decks.FirstOrDefault(x => x.Id == id);
+			if (oldDeck == null)
+				return Task.CompletedTask;
+
+			oldDeck.SetName = name;
+			StateHasChanged();
+
+			_ = Task.Run(() => LoadDecks(true));
+			return Task.CompletedTask;
+		}
+
+		private async Task EditClicked(long id)
+		{
+			var deck = _decks.FirstOrDefault(x => x.Id == id);
+			if (deck == null)
+				return;
+
+			await _dialogService.OpenAsync<EditDeck>("EditCard",
+				new Dictionary<string, object>()
+				{
+					{ "SetId", id },
+					{ "Name", deck.SetName },
+					{ "CompleteCallback", (string name) => OnDeckEditComplete(id, name) }
+				},
+				new DialogOptions()
+				{
+					ShowTitle = false,
+					ShowClose = false,
+					CloseDialogOnOverlayClick = true
+				});
 		}
 
 		private void OnDeckClicked(long id)

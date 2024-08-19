@@ -16,15 +16,26 @@
         margin-right: 8px;
     }
 
-    .cardsContainer {
-        height: 100%;
-        width: 100%;
+    .cardsHeader .deckHeaderTitle {
         display: flex;
-        flex-wrap: wrap;
-        position: relative;
-        align-content: flex-start;
-        overflow: auto;
+        align-items: center;
+        margin-right: 8px;
     }
+
+    .cardsHeader .deckHeaderButtons {
+        display: flex;
+        align-items: center;
+    }
+
+.cardsContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    align-content: flex-start;
+    overflow: auto;
+}
 
 .cardListing {
     width: 265px;
@@ -135,4 +146,33 @@
         margin-right: 0;
         overflow: hidden;
     }
+
+    .cardsHeader {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        height: auto;
+    }
+
+        .cardsHeader .deckHeaderTitle {
+            display: flex;
+            align-items: baseline;
+            margin: 4px 0 4px 0;
+        }
+
+            .cardsHeader .deckHeaderTitle h2 {
+                margin: 0
+            }
+
+                .cardsHeader .deckHeaderTitle h2 span {
+                    font-size: var(--f16);
+                    font-weight: normal;
+                }
+
+        .cardsHeader .deckHeaderButtons {
+            display: flex;
+            align-items: center;
+            height: 35px;
+        }
 }

@@ -73,6 +73,47 @@ namespace FlashCards.Server.Services
 			}
 		}
 
+		public async Task<StandardResponse<CardSetView>> GetCardSet(long setId, long userId)
+		{
+			var standardMessage = $"CardService:GetCardSets({userId})";
+			try
+			{
+				var set = (await _dbContext.CardSet.Where(x => x.UserId == userId && x.Id == setId).ToListAsync())?.FirstOrDefault();
+				if (set == null)
+				{
+					return new StandardResponse<CardSetView>()
+					{
+						Success = false,
+						StatusCode = System.Net.HttpStatusCode.NotFound,
+						Message = "CARD_SET_NOT_FOUND"
+					};
+				}
+
+				var setView = new CardSetView()
+				{
+					Id = set.Id,
+					ModifiedTime = set.ModifiedTime,
+					CardCount = await _dbContext.Card.CountAsync(y => y.SetId == set.Id),
+					SetName = set.SetName
+				};
+
+				return new StandardResponse<CardSetView>()
+				{
+					Data = setView
+				};
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: {standardMessage}");
+				return new StandardResponse<CardSetView>()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				};
+			}
+		}
+
 		public async Task<StandardResponse<List<CardSetView>>> GetCardSets(long userId)
 		{
 			var standardMessage = $"CardService:GetCardSets({userId})";

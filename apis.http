@@ -32,6 +32,10 @@ GET https://localhost:7062/api/card/GetCardSets HTTP/1.1
 
 ###
 
+GET https://localhost:7062/api/card/GetCardSet/1 HTTP/1.1
+
+###
+
 PATCH https://localhost:7062/api/card/EditCardSet HTTP/1.1
 content-type: application/json
 

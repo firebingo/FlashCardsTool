@@ -14,9 +14,16 @@ else
 {
     <div class="cardsRootContainer">
         <div class="cardsHeader">
-            <button class="positive" @onclick="NewCardClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Add Card</button>
-            <button class="positive" @onclick="OnPlayClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Play</button>
-            <button class="positive" @onclick="() => {}" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">History</button>
+            <div class="deckHeaderTitle">
+                <h2>
+                    @_deck.SetName&nbsp;<span>@($"({_deck.CardCount} cards)")</span>
+                </h2>
+            </div>
+            <div class="deckHeaderButtons">
+                <button class="positive" @onclick="NewCardClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Add Card</button>
+                <button class="positive" @onclick="OnPlayClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Play</button>
+                <button class="positive" @onclick="() => {}" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">History</button>
+            </div>
         </div>
         @if (!string.IsNullOrWhiteSpace(_errorMessage))
         {

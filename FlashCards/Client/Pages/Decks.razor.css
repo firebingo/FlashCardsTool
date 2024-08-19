@@ -75,6 +75,23 @@
     padding: 8px;
 }
 
+.deckEditIcon {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    width: var(--f22);
+    height: var(--f22);
+    z-index: 1;
+}
+
+    .deckEditIcon span {
+        font-size: var(--f22);
+    }
+
+    .deckEditIcon:hover span {
+        color: var(--hover-font-color);
+    }
+
 .deckDeleteIcon {
     position: absolute;
     left: 4px;

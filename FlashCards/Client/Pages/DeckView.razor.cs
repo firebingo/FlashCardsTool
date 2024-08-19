@@ -18,6 +18,7 @@ namespace FlashCards.Client.Pages
 	{
 		private bool _loading;
 		private string _errorMessage = string.Empty;
+		private CardSetView _deck = new CardSetView();
 		private CardsView _cards = new CardsView();
 
 		[Parameter]
@@ -41,7 +42,46 @@ namespace FlashCards.Client.Pages
 		{
 			if (firstRender)
 			{
+				var res = await LoadSetView();
+				if (!res)
+					return;
 				await LoadCards();
+			}
+		}
+
+		private async Task<bool> LoadSetView()
+		{
+			_loading = true;
+			_errorMessage = string.Empty;
+			try
+			{
+				using var getCardSetRes = await _httpClient.GetAsync($"/api/Card/GetCardSet/{_id}");
+				var cardSetS = await getCardSetRes.Content.ReadAsStringAsync();
+				if (!getCardSetRes.IsSuccessStatusCode || string.IsNullOrWhiteSpace(cardSetS) || !cardSetS.StartsWith('{'))
+				{
+					_errorMessage = $"Failed to load deck. ({getCardSetRes.StatusCode})";
+					return false;
+				}
+				var setView = JsonSerializer.Deserialize<StandardResponse<CardSetView>>(cardSetS, DefaultJsonOptions.DefaultOptions);
+				if (setView?.Data == null || !setView.Success)
+				{
+					_errorMessage = string.IsNullOrWhiteSpace(setView?.Message) ? $"Failed to load deck. ({getCardSetRes.StatusCode})" : setView.Message;
+					return false;
+				}
+
+				_deck = setView.Data;
+
+				return true;
+			}
+			catch
+			{
+				_errorMessage = $"Failed to load deck.";
+				return false;
+			}
+			finally
+			{
+				_loading = false;
+				StateHasChanged();
 			}
 		}
 

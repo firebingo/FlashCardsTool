@@ -31,6 +31,9 @@ else
                         <div class="deckDeleteIcon" @onclick="() => OnDeckDeleteClicked(deck.Id)" @onclick:stopPropagation="true">
                             <span class="symbol">delete</span>
                         </div>
+                        <div class="deckEditIcon" @onclick="() => EditClicked(deck.Id)" @onclick:stopPropagation="true">
+                            <span class="symbol">edit_note</span>
+                        </div>
                         <div class="deckName">
                             @deck.SetName
                         </div>
