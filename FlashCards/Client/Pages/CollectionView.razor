@@ -16,13 +16,13 @@ else
         <div class="contentHeader">
             <div class="collectionHeaderTitle">
                 <h2>
-                    @_collection.CollectionName&nbsp;<span>@($"({_collection.DeckIds.Count} decks)")</span>&nbsp;<span>@($"({_collection.CardCount} cards)")</span>
+                    @_collection.CollectionName&nbsp;<span>@($"({_collection.DeckIds.Count} decks / {_collection.CardCount} cards)")</span>
                 </h2>
             </div>
             <div class="collectionHeaderButtons">
-                <button class="positive" @onclick="NewCardClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Add Card</button>
+                <button class="positive" @onclick="OnEditClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Edit</button>
                 <button class="positive" @onclick="OnPlayClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Play</button>
-                <button class="positive" @onclick="() => {}" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">History</button>
+                @* <button class="positive" @onclick="() => {}" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">History</button> *@
             </div>
         </div>
         @if (!string.IsNullOrWhiteSpace(_errorMessage))
@@ -45,7 +45,7 @@ else
                         }
                         else
                         {
-                            <div class="cardEditIcon" @onclick="() => EditClicked(card.Id)" @onclick:stopPropagation="true">
+                            <div class="cardEditIcon" @onclick="() => EditCardClicked(card.Id)" @onclick:stopPropagation="true">
                                 <span class="symbol">edit_note</span>
                             </div>
                             <div class="@($"cardValues {(card.Flipped ? "cardFlipped" : "")}")">

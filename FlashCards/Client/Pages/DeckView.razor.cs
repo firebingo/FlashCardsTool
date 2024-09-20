@@ -157,6 +157,7 @@ namespace FlashCards.Client.Pages
 				return Task.CompletedTask;
 
 			_cards.Cards.Add(card);
+			_deck.CardCount++;
 			StateHasChanged();
 			_ = Task.Run(async () => await LoadCardsBackground(true));
 			return Task.CompletedTask;
@@ -252,8 +253,33 @@ namespace FlashCards.Client.Pages
 			}
 
 			_cards.Cards = _cards.Cards.Where(x => x.Id != card.Id).ToList();
+			_deck.CardCount--;
 			StateHasChanged();
 			_ = Task.Run(async () => await LoadCardsBackground(true));
+		}
+
+		private Task OnDeckEditComplete(string name)
+		{
+			_deck.SetName = name;
+			StateHasChanged();
+			return Task.CompletedTask;
+		}
+
+		private async Task EditClicked()
+		{
+			await _dialogService.OpenAsync<EditDeck>("EditDeck",
+				new Dictionary<string, object>()
+				{
+					{ "SetId", _id },
+					{ "Name", _deck.SetName },
+					{ "CompleteCallback", (string name) => OnDeckEditComplete(name) }
+				},
+				new DialogOptions()
+				{
+					ShowTitle = false,
+					ShowClose = false,
+					CloseDialogOnOverlayClick = true
+				});
 		}
 
 		private void OnPlayClicked()

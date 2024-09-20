@@ -4,11 +4,8 @@ using FlashCards.Shared.Util;
 using FlashCards.Shared.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Radzen;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -42,40 +39,40 @@ namespace FlashCards.Client.Pages
 		{
 			if (firstRender)
 			{
-				var res = await LoadSetView();
+				var res = await LoadCollectionView();
 				if (!res)
 					return;
 				await LoadCards();
 			}
 		}
 
-		private async Task<bool> LoadSetView()
+		private async Task<bool> LoadCollectionView()
 		{
 			_loading = true;
 			_errorMessage = string.Empty;
 			try
 			{
-				using var getCardSetRes = await _httpClient.GetAsync($"/api/Card/GetCardSet/{_id}");
-				var cardSetS = await getCardSetRes.Content.ReadAsStringAsync();
-				if (!getCardSetRes.IsSuccessStatusCode || string.IsNullOrWhiteSpace(cardSetS) || !cardSetS.StartsWith('{'))
+				using var getCollectionRes = await _httpClient.GetAsync($"/api/Collection/GetCardCollection/{_id}");
+				var collectionS = await getCollectionRes.Content.ReadAsStringAsync();
+				if (!getCollectionRes.IsSuccessStatusCode || string.IsNullOrWhiteSpace(collectionS) || !collectionS.StartsWith('{'))
 				{
-					_errorMessage = $"Failed to load deck. ({getCardSetRes.StatusCode})";
+					_errorMessage = $"Failed to load collection. ({getCollectionRes.StatusCode})";
 					return false;
 				}
-				var setView = JsonSerializer.Deserialize<StandardResponse<CardSetView>>(cardSetS, DefaultJsonOptions.DefaultOptions);
-				if (setView?.Data == null || !setView.Success)
+				var collectionView = JsonSerializer.Deserialize<StandardResponse<CardCollectionView>>(collectionS, DefaultJsonOptions.DefaultOptions);
+				if (collectionView?.Data == null || !collectionView.Success)
 				{
-					_errorMessage = string.IsNullOrWhiteSpace(setView?.Message) ? $"Failed to load deck. ({getCardSetRes.StatusCode})" : setView.Message;
+					_errorMessage = string.IsNullOrWhiteSpace(collectionView?.Message) ? $"Failed to load collection. ({getCollectionRes.StatusCode})" : collectionView.Message;
 					return false;
 				}
 
-				_deck = setView.Data;
+				_collection = collectionView.Data;
 
 				return true;
 			}
 			catch
 			{
-				_errorMessage = $"Failed to load deck.";
+				_errorMessage = $"Failed to load collection.";
 				return false;
 			}
 			finally
@@ -106,7 +103,7 @@ namespace FlashCards.Client.Pages
 
 		private async Task LoadCardsBackground(bool background = false)
 		{
-			using var getCardsRes = await _httpClient.GetAsync($"/api/Card/GetCardsForSet/{_id}");
+			using var getCardsRes = await _httpClient.GetAsync($"/api/Collection/GetCardsForCollection/{_id}");
 			var cardsS = await getCardsRes.Content.ReadAsStringAsync();
 			if (!getCardsRes.IsSuccessStatusCode || string.IsNullOrWhiteSpace(cardsS) || !cardsS.StartsWith('{'))
 			{
@@ -135,34 +132,7 @@ namespace FlashCards.Client.Pages
 			StateHasChanged();
 		}
 
-		private async Task NewCardClicked()
-		{
-			await _dialogService.OpenAsync<NewCard>("NewCard",
-				new Dictionary<string, object>()
-				{
-					{ "SetId", _id },
-					{ "CompleteCallback", (CardView card) => OnNewCardComplete(card) }
-				},
-				new DialogOptions()
-				{
-					ShowTitle = false,
-					ShowClose = false,
-					CloseDialogOnOverlayClick = true
-				});
-		}
-
-		private Task OnNewCardComplete(CardView? card)
-		{
-			if (card == null)
-				return Task.CompletedTask;
-
-			_cards.Cards.Add(card);
-			StateHasChanged();
-			_ = Task.Run(async () => await LoadCardsBackground(true));
-			return Task.CompletedTask;
-		}
-
-		private async Task EditClicked(long id)
+		private async Task EditCardClicked(long id)
 		{
 			var card = _cards.Cards.FirstOrDefault(x => x.Id == id);
 			if (card == null)
@@ -171,9 +141,9 @@ namespace FlashCards.Client.Pages
 			await _dialogService.OpenAsync<EditCard>("EditCard",
 				new Dictionary<string, object>()
 				{
-					{ "SetId", _id },
+					{ "SetId", card.SetId },
 					{ "Card", card },
-					{ "CompleteCallback", (CardView card) => OnEditComplete(card) }
+					{ "CompleteCallback", (CardView card) => OnEditCardComplete(card) }
 				},
 				new DialogOptions()
 				{
@@ -183,7 +153,7 @@ namespace FlashCards.Client.Pages
 				});
 		}
 
-		private Task OnEditComplete(CardView? card)
+		private Task OnEditCardComplete(CardView? card)
 		{
 			if (card == null)
 				return Task.CompletedTask;
@@ -202,63 +172,34 @@ namespace FlashCards.Client.Pages
 			return Task.CompletedTask;
 		}
 
-		private void DeleteClicked(long id)
+		private async Task OnEditClicked()
 		{
-			var card = _cards.Cards.FirstOrDefault(x => x.Id == id);
-			if (card == null)
-				return;
-
-			card.DeleteConfirm = true;
-			StateHasChanged();
+			await _dialogService.OpenAsync<EditCollection>("EditCollection",
+				new Dictionary<string, object>()
+				{
+					{ "Collection", _collection },
+					{ "CompleteCallback", (string name) => OnEditComplete(name) }
+				},
+				new DialogOptions()
+				{
+					ShowTitle = false,
+					ShowClose = false,
+					CloseDialogOnOverlayClick = true
+				});
 		}
 
-		private async Task ConfirmDeleteClicked(long id)
+		private async Task OnEditComplete(string name)
 		{
-			var card = _cards.Cards.FirstOrDefault(x => x.Id == id);
-			if (card == null)
-				return;
+			if (!string.IsNullOrWhiteSpace(name))
+				_collection.CollectionName = name;
 
-			card.DeleteConfirm = false;
-			card.Loading = true;
-			var postModel = new DeleteCardsRequest()
-			{
-				SetId = _id,
-				Cards =
-				[
-					new DeleteCardsCard() { Id = id }
-				]
-			};
-			using var content = new StringContent(JsonSerializer.Serialize(postModel, DefaultJsonOptions.DefaultOptions), Encoding.UTF8, "application/json");
-			using var request = new HttpRequestMessage
-			{
-				Method = HttpMethod.Delete,
-				RequestUri = new Uri(_httpClient.BaseAddress!, "/api/card/DeleteCards"),
-				Content = content
-			};
-			using var res = await _httpClient.SendAsync(request);
-			var resS = await res.Content.ReadAsStringAsync();
-			if (!res.IsSuccessStatusCode || string.IsNullOrWhiteSpace(resS) || !resS.StartsWith('{'))
-			{
-				_errorMessage = $"Error deleting card. ({res.StatusCode})";
-				_loading = false;
-				return;
-			}
-			var result = JsonSerializer.Deserialize<StandardResponse>(resS, DefaultJsonOptions.DefaultOptions);
-			if (result?.Success != true)
-			{
-				_errorMessage = $"Error deleting card. ({res.StatusCode})";
-				_loading = false;
-				return;
-			}
-
-			_cards.Cards = _cards.Cards.Where(x => x.Id != card.Id).ToList();
-			StateHasChanged();
-			_ = Task.Run(async () => await LoadCardsBackground(true));
+			await LoadCollectionView();
+			await LoadCards();
 		}
 
 		private void OnPlayClicked()
 		{
-			_navManager.NavigateTo($"/Decks/{_id}/Game");
+			_navManager.NavigateTo($"/Collections/{_id}/Game");
 		}
 	}
 }

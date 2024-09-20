@@ -14,7 +14,7 @@ else
 {
     <div class="contentRootContainer">
         <div class="contentHeader">
-            <button class="positive" @onclick="OnNewCollectionClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">New Deck</button>
+            <button class="positive" @onclick="OnNewCollectionClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">New Collection</button>
         </div>
         @if (!string.IsNullOrWhiteSpace(_errorMessage))
         {

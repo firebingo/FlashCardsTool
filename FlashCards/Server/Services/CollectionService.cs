@@ -90,12 +90,15 @@ namespace FlashCards.Server.Services
 				}
 
 				var decks = await _dbContext.CardCollectionSets.Where(x => x.CollectionId == set.Id).ToListAsync();
+				var deckIds = decks.Select(x => x.SetId).ToList();
+				var cardCount = await _dbContext.Card.CountAsync(x => deckIds.Contains(x.SetId));
 				var collectionView = new CardCollectionView()
 				{
 					Id = set.Id,
 					ModifiedTime = set.ModifiedTime,
 					CollectionName = set.CollectionName,
-					DeckIds = decks.Select(x => x.SetId).ToList()
+					DeckIds = deckIds,
+					CardCount = cardCount
 				};
 
 				return new StandardResponse<CardCollectionView>()
@@ -125,12 +128,15 @@ namespace FlashCards.Server.Services
 				foreach (var set in sets)
 				{
 					var decks = await _dbContext.CardCollectionSets.Where(x => x.CollectionId == set.Id).ToListAsync();
+					var deckIds = decks.Select(x => x.SetId).ToList();
+					var cardCount = await _dbContext.Card.CountAsync(x => deckIds.Contains(x.SetId));
 					viewSets.Add(new CardCollectionView()
 					{
 						Id = set.Id,
 						ModifiedTime = set.ModifiedTime,
 						CollectionName = set.CollectionName,
-						DeckIds = decks.Select(x => x.SetId).ToList()
+						DeckIds = deckIds,
+						CardCount = cardCount
 					});
 				}
 

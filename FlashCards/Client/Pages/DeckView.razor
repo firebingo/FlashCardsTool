@@ -20,9 +20,10 @@ else
                 </h2>
             </div>
             <div class="deckHeaderButtons">
+                <button class="positive" @onclick="EditClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Edit</button>
                 <button class="positive" @onclick="NewCardClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Add Card</button>
                 <button class="positive" @onclick="OnPlayClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Play</button>
-                <button class="positive" @onclick="() => {}" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">History</button>
+                @* <button class="positive" @onclick="() => {}" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">History</button> *@
             </div>
         </div>
         @if (!string.IsNullOrWhiteSpace(_errorMessage))

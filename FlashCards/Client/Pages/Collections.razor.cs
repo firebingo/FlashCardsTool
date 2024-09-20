@@ -104,11 +104,10 @@ namespace FlashCards.Client.Pages
 			if (collection == null)
 				return;
 
-			await _dialogService.OpenAsync<EditDeck>("EditCard",
+			await _dialogService.OpenAsync<EditCollection>("EditCollection",
 				new Dictionary<string, object>()
 				{
-					{ "SetId", id },
-					{ "Name", collection.CollectionName },
+					{ "Collection", collection },
 					{ "CompleteCallback", (string name) => OnCollectionEditComplete(id, name) }
 				},
 				new DialogOptions()
