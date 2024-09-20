@@ -78,28 +78,44 @@ namespace FlashCards.Server.Services
 			var standardMessage = $"CollectionService:GetCardCollection({collectionId}, {userId})";
 			try
 			{
-				var set = (await _dbContext.CardCollection.Where(x => x.UserId == userId && x.Id == collectionId).ToListAsync())?.FirstOrDefault();
-				if (set == null)
+				CardCollectionView collectionView;
+				if (collectionId == -1)
 				{
-					return new StandardResponse<CardCollectionView>()
+					var decks = await _dbContext.CardSet.Where(x => x.UserId == userId).ToListAsync();
+					var deckIds = decks.Select(x => x.Id).ToList();
+					collectionView = new CardCollectionView()
 					{
-						Success = false,
-						StatusCode = System.Net.HttpStatusCode.NotFound,
-						Message = "COLLECTION_NOT_FOUND"
+						Id = -1,
+						CollectionName = "All Cards",
+						DeckIds = deckIds,
+						CardCount = await _dbContext.Card.Where(x => deckIds.Contains(x.SetId)).CountAsync()
 					};
 				}
-
-				var decks = await _dbContext.CardCollectionSets.Where(x => x.CollectionId == set.Id).ToListAsync();
-				var deckIds = decks.Select(x => x.SetId).ToList();
-				var cardCount = await _dbContext.Card.CountAsync(x => deckIds.Contains(x.SetId));
-				var collectionView = new CardCollectionView()
+				else
 				{
-					Id = set.Id,
-					ModifiedTime = set.ModifiedTime,
-					CollectionName = set.CollectionName,
-					DeckIds = deckIds,
-					CardCount = cardCount
-				};
+					var set = (await _dbContext.CardCollection.Where(x => x.UserId == userId && x.Id == collectionId).ToListAsync())?.FirstOrDefault();
+					if (set == null)
+					{
+						return new StandardResponse<CardCollectionView>()
+						{
+							Success = false,
+							StatusCode = System.Net.HttpStatusCode.NotFound,
+							Message = "COLLECTION_NOT_FOUND"
+						};
+					}
+
+					var decks = await _dbContext.CardCollectionSets.Where(x => x.CollectionId == set.Id).ToListAsync();
+					var deckIds = decks.Select(x => x.SetId).ToList();
+					var cardCount = await _dbContext.Card.CountAsync(x => deckIds.Contains(x.SetId));
+					collectionView = new CardCollectionView()
+					{
+						Id = set.Id,
+						ModifiedTime = set.ModifiedTime,
+						CollectionName = set.CollectionName,
+						DeckIds = deckIds,
+						CardCount = cardCount
+					};
+				}
 
 				return new StandardResponse<CardCollectionView>()
 				{
@@ -124,7 +140,15 @@ namespace FlashCards.Server.Services
 			try
 			{
 				var sets = await _dbContext.CardCollection.Where(x => x.UserId == userId).ToListAsync();
-				var viewSets = new List<CardCollectionView>();
+				var viewSets = new List<CardCollectionView>()
+				{
+					new CardCollectionView()
+					{
+						Id = -1,
+						DeckIds = (await _dbContext.CardSet.Where(x => x.UserId == userId).ToListAsync()).Select(x => x.Id).ToList(),
+						CollectionName = "All Cards"
+					}
+				};
 				foreach (var set in sets)
 				{
 					var decks = await _dbContext.CardCollectionSets.Where(x => x.CollectionId == set.Id).ToListAsync();
@@ -349,39 +373,60 @@ namespace FlashCards.Server.Services
 			var standardMessage = $"CollectionService:GetCardsForCollection({userId}, {collectionId})";
 			try
 			{
-				var collection = (await _dbContext.CardCollection
-					.Include(x => x.CollectionSets)
-					!.ThenInclude(x => x.CardSet)
-					!.ThenInclude(x => x!.Cards)
-					.Where(x => x.UserId == userId && collectionId == x.Id)
-					.ToListAsync()).FirstOrDefault();
-				if (collection == null)
-				{
-					return new StandardResponse<CardsView>()
-					{
-						Success = false,
-						StatusCode = System.Net.HttpStatusCode.NotFound,
-						Message = "COLLECTION_NOT_FOUND"
-					};
-				}
-				if (collection.CollectionSets == null || collection.CollectionSets.Count == 0)
-				{
-					return new StandardResponse<CardsView>();
-				}
-
+				CardSetCollection? collection = null;
 				var cards = new List<CardView>();
-				foreach (var collectionSet in collection.CollectionSets)
+				if (collectionId == -1)
 				{
-					if (collectionSet.CardSet != null && collectionSet.CardSet.Cards != null && collectionSet.CardSet.Cards.Count > 0)
+					collection = new CardSetCollection()
 					{
-						cards.AddRange(collectionSet.CardSet.Cards.Select(x => new CardView()
+						Id = -1,
+						CollectionName = "All Cards"
+					};
+					var cardSets = await _dbContext.CardSet.Include(x => x.Cards).Where(x => x.UserId == userId).ToListAsync();
+					cards = cardSets.SelectMany(x => x.Cards ?? []).Select(x => new CardView()
+					{
+						Id = x.Id,
+						SetId = x.SetId,
+						BackValue = x.BackValue,
+						FrontValue = x.FrontValue,
+						ModifiedTime = x.ModifiedTime
+					}).ToList();
+				}
+				else
+				{
+					collection = (await _dbContext.CardCollection
+						.Include(x => x.CollectionSets)
+						!.ThenInclude(x => x.CardSet)
+						!.ThenInclude(x => x!.Cards)
+						.Where(x => x.UserId == userId && collectionId == x.Id)
+						.ToListAsync()).FirstOrDefault();
+					if (collection == null)
+					{
+						return new StandardResponse<CardsView>()
 						{
-							Id = x.Id,
-							SetId = x.SetId,
-							BackValue = x.BackValue,
-							FrontValue = x.FrontValue,
-							ModifiedTime = x.ModifiedTime
-						}));
+							Success = false,
+							StatusCode = System.Net.HttpStatusCode.NotFound,
+							Message = "COLLECTION_NOT_FOUND"
+						};
+					}
+					if (collection.CollectionSets == null || collection.CollectionSets.Count == 0)
+					{
+						return new StandardResponse<CardsView>();
+					}
+
+					foreach (var collectionSet in collection.CollectionSets)
+					{
+						if (collectionSet.CardSet != null && collectionSet.CardSet.Cards != null && collectionSet.CardSet.Cards.Count > 0)
+						{
+							cards.AddRange(collectionSet.CardSet.Cards.Select(x => new CardView()
+							{
+								Id = x.Id,
+								SetId = x.SetId,
+								BackValue = x.BackValue,
+								FrontValue = x.FrontValue,
+								ModifiedTime = x.ModifiedTime
+							}));
+						}
 					}
 				}
 				return new StandardResponse<CardsView>()

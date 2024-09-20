@@ -20,7 +20,10 @@ else
                 </h2>
             </div>
             <div class="collectionHeaderButtons">
-                <button class="positive" @onclick="OnEditClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Edit</button>
+                @if (_collection.Id != -1)
+                {
+                    <button class="positive" @onclick="OnEditClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Edit</button>
+                }
                 <button class="positive" @onclick="OnPlayClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Play</button>
                 @* <button class="positive" @onclick="() => {}" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">History</button> *@
             </div>

@@ -28,12 +28,15 @@ else
                 @foreach (var collection in _collections)
                 {
                     <div class="collectionListing" @onclick="() => OnCollectionClicked(collection.Id)">
-                        <div class="collectionDeleteIcon" @onclick="() => OnCollectionDeleteClicked(collection.Id)" @onclick:stopPropagation="true">
-                            <span class="symbol">delete</span>
-                        </div>
-                        <div class="collectionEditIcon" @onclick="() => EditClicked(collection.Id)" @onclick:stopPropagation="true">
-                            <span class="symbol">edit_note</span>
-                        </div>
+                        @if (collection.Id != -1)
+                        {
+                            <div class="collectionDeleteIcon" @onclick="() => OnCollectionDeleteClicked(collection.Id)" @onclick:stopPropagation="true">
+                                <span class="symbol">delete</span>
+                            </div>
+                            <div class="collectionEditIcon" @onclick="() => EditClicked(collection.Id)" @onclick:stopPropagation="true">
+                                <span class="symbol">edit_note</span>
+                            </div>
+                        }
                         <div class="collectionName">
                             @collection.CollectionName
                         </div>

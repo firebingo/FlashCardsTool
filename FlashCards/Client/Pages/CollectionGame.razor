@@ -1,0 +1,118 @@
+﻿@using FlashCards.Client.Components
+@inject HttpClient _httpClient
+@inject NavigationManager _navManager
+@inject DialogService _dialogService
+@page "/Collections/{Id}/Game"
+
+@if (_loading)
+{
+    <div class="loaderFlex">
+        <Loader />
+    </div>
+}
+else
+{
+    <div class="gameRootContainer">
+        <div class="gameHeader">
+            @if (!_prep && !_results)
+            {
+                <button class="negative" @onclick="OnCancelClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Stop</button>
+                @if (Timer)
+                {
+                    <div class="gameTimer">
+                        @(_currentTime.ToString(@"hh\:mm\:ss\.f"))
+                    </div>
+                }
+            }
+            else if (!_prep && _results)
+            {
+                <button class="negative" @onclick="OnCancelClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Discard</button>
+                <button class="positive" @onclick="OnSaveClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Save Result</button>
+            }
+        </div>
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
+        {
+            <div class="marginAuto error">
+                @_errorMessage
+            </div>
+        }
+        else if (_prep)
+        {
+            <div class="prepContainer">
+                <h3>@_sourceCards.CollectionName</h3>
+                <div>@($"This collection has {_sourceCards.Cards.Count} cards.")</div>
+                <div class="prepOptions">
+                    <div class="inputField">
+                        <label>Order:</label>
+                        <select @bind="SelectOrderOption">
+                            @foreach (var option in _orderOptions)
+                            {
+                                <option value="@option.Value">@option.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="inputCheckField">
+                        <label>Shuffle:</label>
+                        <RadzenSwitch @bind-Value=@Shuffle />
+                    </div>
+                    <div class="inputCheckField">
+                        <label>Timer:</label>
+                        <RadzenSwitch @bind-Value=@Timer />
+                    </div>
+                    <div class="inputCheckField">
+                        <label>Flipped:</label>
+                        <RadzenSwitch @bind-Value=@Flipped />
+                    </div>
+                    <button class="positive" @onclick="OnStartClicked">Start</button>
+                </div>
+            </div>
+        }
+        else if (_results)
+        {
+            <div class="resultsContainer">
+                <div class="resultsList">
+                    @if (Timer)
+                    {
+                        <div>
+                            <div>Time:</div>
+                            <div>@((_endTime - _startTime).ToString(@"hh\:mm\:ss\.fff"))</div>
+                        </div>
+                    }
+                    <div>
+                        <div>Correct:</div>
+                        <div>@_cards.Where(x => x.Correct).Count()</div>
+                    </div>
+                    <div>
+                        <div>Incorrect:</div>
+                        <div>@_cards.Where(x => !x.Correct).Count()</div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="gameContainer">
+                <div class="gameElementsContainer">
+                    <div class="cardListing" @onclick="() => CardClicked(_currentCard.Id)">
+                        <div class="@($"cardValues {(_currentCard.Flipped ? "cardFlipped" : "")}")">
+                            <div class="cardValueContainer">
+                                <div class="@($"cardValue cardFront {(_currentCard.Flipped ? "" : "sideDisplay")}")">
+                                    @_currentCard.FrontValue
+                                </div>
+                            </div>
+                            <div class="cardValueContainer">
+                                <div class="@($"cardValue cardBack {(_currentCard.Flipped ? "sideDisplay" : "")}")">
+                                    @_currentCard.BackValue
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gameConfirmButtons">
+                        <button class="negative" @onclick="() => OnNextCardClicked(false)"><span class="symbol">close</span></button>
+                        <button class="positive" @onclick="() => OnNextCardClicked(true)"><span class="symbol">check</span></button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
