@@ -4,6 +4,10 @@
     --rz-switch-checked-background-color: var(--input-foreground);
     --rz-switch-circle-background-color: var(--hover-font-color);
     --rz-switch-checked-circle-background-color: var(--button-positive-hover-background);
+    --rz-checkbox-checked-background-color: var(--button-positive-background-color);
+    --rz-checkbox-checked-border: 1px solid var(--button-positive-background-color);
+    --rz-checkbox-checked-hover-background-color: var(--button-positive-hover-background);
+    --rz-checkbox-checked-hover-border: 1px solid var(--button-positive-hover-background);
 }
 
     body .rz-switch .rz-switch-circle:hover:not(.rz-disabled):before {
@@ -14,12 +18,24 @@
         box-shadow: none;
     }
 
-    @media only screen and (max-width: 768px) {
-        body .rz-dialog {
+    body .rz-chkbox-box.rz-state-active:hover:not(.rz-state-disabled):after {
+        opacity: 0;
+    }
+
+    body .rz-chkbox-box.rz-state-active:active:hover:not(.rz-state-disabled):after {
+        opacity: 0;
+    }
+
+    body .rz-chkbox-box:hover:not(.rz-state-disabled):after {
+        opacity: 0;
+    }
+
+@media only screen and (max-width: 768px) {
+    body .rz-dialog {
         height: 100%;
     }
 
         body .rz-dialog .rz-dialog-content {
             height: 100%;
         }
-} 
+}

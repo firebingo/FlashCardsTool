@@ -1,0 +1,57 @@
+﻿@using FlashCards.Client.Components
+@inject HttpClient _httpClient
+@inject NavigationManager _navManager
+@inject DialogService _dialogService
+@page "/Collections"
+
+@if (_loading)
+{
+    <div class="loaderFlex">
+        <Loader />
+    </div>
+}
+else
+{
+    <div class="contentRootContainer">
+        <div class="contentHeader">
+            <button class="positive" @onclick="OnNewCollectionClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">New Deck</button>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
+        {
+            <div class="marginAuto error">
+                @_errorMessage
+            </div>
+        }
+        else
+        {
+            <div class="contentContainer">
+                @foreach (var collection in _collections)
+                {
+                    <div class="collectionListing" @onclick="() => OnCollectionClicked(collection.Id)">
+                        <div class="collectionDeleteIcon" @onclick="() => OnCollectionDeleteClicked(collection.Id)" @onclick:stopPropagation="true">
+                            <span class="symbol">delete</span>
+                        </div>
+                        <div class="collectionEditIcon" @onclick="() => EditClicked(collection.Id)" @onclick:stopPropagation="true">
+                            <span class="symbol">edit_note</span>
+                        </div>
+                        <div class="collectionName">
+                            @collection.CollectionName
+                        </div>
+                        @if (collection.DeckIds.Count >= 1)
+                        {
+                            <div class="collectionListingBack collectionListingBackOne"></div>
+                        }
+                        @if (collection.DeckIds.Count >= 2)
+                        {
+                            <div class="collectionListingBack collectionListingBackTwo"></div>
+                        }
+                        @if (collection.DeckIds.Count >= 3)
+                        {
+                            <div class="collectionListingBack collectionListingBackThree"></div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}

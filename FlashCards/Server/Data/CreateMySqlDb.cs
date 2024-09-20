@@ -14,7 +14,7 @@ namespace FlashCards.Server.Data
 {
 	public class CreateMySqlDb
 	{
-		private static readonly Regex _dateRegex = new Regex(@"^FlashCards.Server.Data.Scripts.MySQL.(\d{0,})_(\d{0,})", RegexOptions.Compiled);
+		private static readonly Regex _dateRegex = new Regex(@"^FlashCards.Server.Data.Scripts.MySQL.(\d{0,})_(\d{0,})\.sql", RegexOptions.Compiled);
 
 		public async Task<bool> CreateDatabase(AppSettings settings, ServiceDbContext context, ILogger logger)
 		{
@@ -45,7 +45,7 @@ namespace FlashCards.Server.Data
 					.OrderBy(x => x)
 					.ToList();
 
-				var meta = await context.MetaData.FirstOrDefaultAsync();
+				var meta = (await context.MetaData.ToListAsync()).FirstOrDefault();
 				if (meta == null)
 				{
 					logger.LogError("Failed to select meta row from DB");

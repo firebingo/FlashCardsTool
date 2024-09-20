@@ -11,10 +11,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<None Remove="Data\Scripts\MySQL\20240819_1.sql" />
 		<None Remove="Data\Scripts\MySQL\init.sql" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<EmbeddedResource Include="Data\Scripts\MySQL\20240819_1.sql" />
 		<EmbeddedResource Include="Data\Scripts\MySQL\init.sql" />
 	</ItemGroup>
 

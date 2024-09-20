@@ -75,7 +75,7 @@ namespace FlashCards.Server.Services
 
 		public async Task<StandardResponse<CardSetView>> GetCardSet(long setId, long userId)
 		{
-			var standardMessage = $"CardService:GetCardSets({userId})";
+			var standardMessage = $"CardService:GetCardSets({setId}, {userId})";
 			try
 			{
 				var set = (await _dbContext.CardSet.Where(x => x.UserId == userId && x.Id == setId).ToListAsync())?.FirstOrDefault();
@@ -157,7 +157,7 @@ namespace FlashCards.Server.Services
 				var set = (await _dbContext.CardSet.Where(x => x.Id == request.SetId && x.UserId == request.UserId).ToListAsync()).FirstOrDefault();
 				if (set == null)
 				{
-					return new StandardResponse<CardsView>()
+					return new StandardResponse()
 					{
 						Success = false,
 						StatusCode = System.Net.HttpStatusCode.NotFound,
@@ -267,6 +267,7 @@ namespace FlashCards.Server.Services
 						.Select(x => new CardView()
 						{
 							Id = x.Id,
+							SetId = cardSet.Id,
 							BackValue = x.BackValue,
 							FrontValue = x.FrontValue,
 							ModifiedTime = x.ModifiedTime
@@ -314,6 +315,7 @@ namespace FlashCards.Server.Services
 						Cards = set.Cards.Select(x => new CardView()
 						{
 							Id = x.Id,
+							SetId = set.Id,
 							BackValue = x.BackValue,
 							FrontValue = x.FrontValue,
 							ModifiedTime = x.ModifiedTime
@@ -367,6 +369,7 @@ namespace FlashCards.Server.Services
 					retCards.Add(new CardView()
 					{
 						Id = dbCard.Id,
+						SetId = set.Id,
 						FrontValue = dbCard.FrontValue,
 						BackValue = dbCard.BackValue,
 						ModifiedTime = dbCard.ModifiedTime,

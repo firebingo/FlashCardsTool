@@ -112,3 +112,66 @@ content-type: application/json
         }
     ]
 }
+
+###
+
+PUT https://localhost:7062/api/collection/CreateCardCollection HTTP/1.1
+content-type: application/json
+
+{
+    "name": "testcollection"
+}
+
+###
+
+GET https://localhost:7062/api/collection/GetCardCollections HTTP/1.1
+
+###
+
+GET https://localhost:7062/api/collection/GetCardCollection/1 HTTP/1.1
+
+###
+
+PATCH https://localhost:7062/api/collection/EditCardCollection HTTP/1.1
+content-type: application/json
+
+{
+    "collectionId": 1,
+    "name": "testcollectionedit"
+}
+
+###
+
+DELETE https://localhost:7062/api/collection/DeleteCardCollection/1 HTTP/1.1
+
+###
+
+POST https://localhost:7062/api/collection/AddSetsToCollection HTTP/1.1
+content-type: application/json
+
+{
+    "collectionId": 1,
+    "setIds": [
+        1,
+        2
+    ]
+}
+
+###
+
+POST https://localhost:7062/api/collection/RemoveSetsFromCollection HTTP/1.1
+content-type: application/json
+
+{
+    "collectionId": 1,
+    "setIds": [
+        1,
+        2
+    ]
+}
+
+###
+
+GET https://localhost:7062/api/collection/GetCardsForCollection/1 HTTP/1.1
+
+###

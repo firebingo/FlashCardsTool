@@ -1,4 +1,4 @@
-﻿.deckListing {
+﻿.collectionListing {
     width: 265px;
     height: 166px;
     background-color: var(--base-bg-color);
@@ -11,7 +11,7 @@
     cursor: pointer;
 }
 
-.deckListingBack {
+.collectionListingBack {
     position: absolute;
     border: 1px solid var(--base-border-color);
     border-radius: var(--large-border-radius);
@@ -19,30 +19,30 @@
     height: 101%;
 }
 
-.deckListingBackOne {
+.collectionListingBackOne {
     z-index: -1;
     margin: 0px 0 0 0px;
 }
 
-.deckListingBackTwo {
+.collectionListingBackTwo {
     z-index: -2;
     margin: 1px 0 0 1px;
 }
 
-.deckListingBackThree {
+.collectionListingBackThree {
     z-index: -3;
     margin: 2px 0 0 2px;
 }
 
-.deckListing:hover {
+.collectionListing:hover {
     border-color: var(--hover-border-color);
 }
 
-    .deckListing:hover .deckListingBack {
+    .collectionListing:hover .collectionListingBack {
         border-color: var(--hover-border-color);
     }
 
-.deckName {
+.collectionName {
     margin: auto;
     font-size: var(--f20);
     text-align: center;
@@ -51,7 +51,7 @@
     padding: 8px;
 }
 
-.deckEditIcon {
+.collectionEditIcon {
     position: absolute;
     right: 4px;
     top: 4px;
@@ -60,15 +60,15 @@
     z-index: 1;
 }
 
-    .deckEditIcon span {
+    .collectionEditIcon span {
         font-size: var(--f22);
     }
 
-    .deckEditIcon:hover span {
+    .collectionEditIcon:hover span {
         color: var(--hover-font-color);
     }
 
-.deckDeleteIcon {
+.collectionDeleteIcon {
     position: absolute;
     left: 4px;
     top: 4px;
@@ -77,20 +77,16 @@
     z-index: 1;
 }
 
-    .deckDeleteIcon span {
+    .collectionDeleteIcon span {
         font-size: var(--f22);
     }
 
-    .deckDeleteIcon:hover span {
+    .collectionDeleteIcon:hover span {
         color: var(--error-color);
     }
 
 @media only screen and (max-width: 768px) {
-    .decksContainer {
-        overflow: auto;
-    }
-
-    .deckListing {
+    .collectionListing {
         width: 100%;
         margin-right: 0;
         overflow: hidden;

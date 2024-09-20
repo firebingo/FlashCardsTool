@@ -2,7 +2,7 @@
 @inject HttpClient _httpClient
 @inject NavigationManager _navManager
 @inject DialogService _dialogService
-@page "/Decks/{Id}"
+@page "/Collections/{Id}"
 
 @if (_loading)
 {
@@ -14,12 +14,12 @@ else
 {
     <div class="contentRootContainer">
         <div class="contentHeader">
-            <div class="deckHeaderTitle">
+            <div class="collectionHeaderTitle">
                 <h2>
-                    @_deck.SetName&nbsp;<span>@($"({_deck.CardCount} cards)")</span>
+                    @_collection.CollectionName&nbsp;<span>@($"({_collection.DeckIds.Count} decks)")</span>&nbsp;<span>@($"({_collection.CardCount} cards)")</span>
                 </h2>
             </div>
-            <div class="deckHeaderButtons">
+            <div class="collectionHeaderButtons">
                 <button class="positive" @onclick="NewCardClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Add Card</button>
                 <button class="positive" @onclick="OnPlayClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Play</button>
                 <button class="positive" @onclick="() => {}" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">History</button>
@@ -45,18 +45,6 @@ else
                         }
                         else
                         {
-                            @if (!card.DeleteConfirm)
-                            {
-                                <div class="cardDeleteIcon" @onclick="() => DeleteClicked(card.Id)" @onclick:stopPropagation="true">
-                                    <span class="symbol">delete</span>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="cardDeleteIcon" @onclick="() => ConfirmDeleteClicked(card.Id)" @onclick:stopPropagation="true">
-                                    <span class="symbol">delete_forever</span>
-                                </div>
-                            }
                             <div class="cardEditIcon" @onclick="() => EditClicked(card.Id)" @onclick:stopPropagation="true">
                                 <span class="symbol">edit_note</span>
                             </div>

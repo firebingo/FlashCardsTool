@@ -6,14 +6,17 @@ namespace FlashCards.Shared.ViewModels
 {
 	public class CardsView
 	{
-		public long SetId { get; set; }
-		public string SetName { get; set; } = string.Empty;
+		public long? SetId { get; set; } = null;
+		public string? SetName { get; set; } = null;
+		public long? CollectionId { get; set; } = null;
+		public string? CollectionName { get; set; } = null;
 		public List<CardView> Cards { get; set; } = [];
 	}
 
 	public class CardView
 	{
 		public long Id { get; set; }
+		public long SetId { get; set; }
 		public string? FrontValue { get; set; }
 		public string? BackValue { get; set; }
 		public DateTime ModifiedTime { get; set; }

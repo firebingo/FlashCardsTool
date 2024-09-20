@@ -13,20 +13,20 @@ namespace FlashCards.Server.Controllers
 	[ApiController]
 	[Route("api/[controller]")]
 	[Produces("application/json")]
-	public class CardController : ControllerBase
+	public class CollectionController : ControllerBase
 	{
-		readonly ILogger<CardController> _logger;
-		readonly CardService _cardService;
+		readonly ILogger<CollectionController> _logger;
+		readonly CollectionService _collectionService;
 
-		public CardController(ILogger<CardController> logger, CardService cardService)
+		public CollectionController(ILogger<CollectionController> logger, CollectionService collectionService)
 		{
 			_logger = logger;
-			_cardService = cardService;
+			_collectionService = collectionService;
 		}
 
 		[HttpPut("[action]")]
 		[Authorize]
-		public async Task<IActionResult> CreateCardSet(CreateCardSetRequest request)
+		public async Task<IActionResult> CreateCardCollection(CreateCardCollectionRequest request)
 		{
 			try
 			{
@@ -41,12 +41,12 @@ namespace FlashCards.Server.Controllers
 				}
 
 				request.UserId = userId;
-				var res = await _cardService.CreateCardSet(request);
+				var res = await _collectionService.CreateCardCollection(request);
 				return StatusCode((int)res.StatusCode, res);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Exception in CardController:CreateCardSet({JsonSerializer.Serialize(request)})");
+				_logger.LogError(ex, $"Exception in CollectionController:CreateCardCollection({JsonSerializer.Serialize(request)})");
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
@@ -56,9 +56,9 @@ namespace FlashCards.Server.Controllers
 			}
 		}
 
-		[HttpGet("[action]/{setId}")]
+		[HttpGet("[action]/{collectionId}")]
 		[Authorize]
-		public async Task<IActionResult> GetCardSet([FromRoute] long setId)
+		public async Task<IActionResult> GetCardCollection([FromRoute] long collectionId)
 		{
 			try
 			{
@@ -72,12 +72,12 @@ namespace FlashCards.Server.Controllers
 					});
 				}
 
-				var res = await _cardService.GetCardSet(setId, userId);
+				var res = await _collectionService.GetCardCollection(collectionId, userId);
 				return StatusCode((int)res.StatusCode, res);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Exception in CardController:GetCardSet({setId})");
+				_logger.LogError(ex, $"Exception in CollectionController:GetCardCollection({collectionId})");
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
@@ -89,7 +89,7 @@ namespace FlashCards.Server.Controllers
 
 		[HttpGet("[action]")]
 		[Authorize]
-		public async Task<IActionResult> GetCardSets()
+		public async Task<IActionResult> GetCardCollections()
 		{
 			try
 			{
@@ -103,12 +103,12 @@ namespace FlashCards.Server.Controllers
 					});
 				}
 
-				var res = await _cardService.GetCardSets(userId);
+				var res = await _collectionService.GetCardCollections(userId);
 				return StatusCode((int)res.StatusCode, res);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Exception in CardController:GetCardSets()");
+				_logger.LogError(ex, $"Exception in CollectionController:GetCardCollections()");
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
@@ -120,7 +120,7 @@ namespace FlashCards.Server.Controllers
 
 		[HttpPatch("[action]")]
 		[Authorize]
-		public async Task<IActionResult> EditCardSet(EditCardSetRequest request)
+		public async Task<IActionResult> EditCardCollection(EditCardCollectionRequest request)
 		{
 			try
 			{
@@ -135,12 +135,12 @@ namespace FlashCards.Server.Controllers
 				}
 				request.UserId = userId;
 
-				var res = await _cardService.EditCardSet(request);
+				var res = await _collectionService.EditCardCollection(request);
 				return StatusCode((int)res.StatusCode, res);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Exception in CardController:EditCardSet({JsonSerializer.Serialize(request)})");
+				_logger.LogError(ex, $"Exception in CollectionController:EditCardCollection({JsonSerializer.Serialize(request)})");
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
@@ -150,9 +150,9 @@ namespace FlashCards.Server.Controllers
 			}
 		}
 
-		[HttpDelete("[action]/{setId}")]
+		[HttpDelete("[action]/{collectionId}")]
 		[Authorize]
-		public async Task<IActionResult> DeleteCardSet([FromRoute] long setId)
+		public async Task<IActionResult> DeleteCardCollection([FromRoute] long collectionId)
 		{
 			try
 			{
@@ -166,12 +166,12 @@ namespace FlashCards.Server.Controllers
 					});
 				}
 
-				var res = await _cardService.DeleteCardSet(setId, userId);
+				var res = await _collectionService.DeleteCardCollection(collectionId, userId);
 				return StatusCode((int)res.StatusCode, res);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Exception in CardController:DeleteCardSet({setId})");
+				_logger.LogError(ex, $"Exception in CollectionController:DeleteCardCollection({collectionId})");
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
@@ -181,9 +181,9 @@ namespace FlashCards.Server.Controllers
 			}
 		}
 
-		[HttpPut("[action]")]
+		[HttpPost("[action]")]
 		[Authorize]
-		public async Task<IActionResult> CreateCards(CreateCardsRequest request)
+		public async Task<IActionResult> AddSetsToCollection([FromBody] AddSetsToCollectionRequest request)
 		{
 			try
 			{
@@ -196,14 +196,14 @@ namespace FlashCards.Server.Controllers
 						Message = "UNAUTHORIZED"
 					});
 				}
-
 				request.UserId = userId;
-				var res = await _cardService.CreateCards(request);
+
+				var res = await _collectionService.AddSetsToCollection(request);
 				return StatusCode((int)res.StatusCode, res);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Exception in CardController:CreateCards({JsonSerializer.Serialize(request)})");
+				_logger.LogError(ex, $"Exception in CollectionController:AddSetsToCollection({JsonSerializer.Serialize(request)})");
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
@@ -213,9 +213,9 @@ namespace FlashCards.Server.Controllers
 			}
 		}
 
-		[HttpGet("[action]/{setId}")]
+		[HttpPost("[action]")]
 		[Authorize]
-		public async Task<IActionResult> GetCardsForSet([FromRoute] long setId)
+		public async Task<IActionResult> RemoveSetsFromCollection([FromBody] RemoveSetsFromCollectionRequest request)
 		{
 			try
 			{
@@ -228,45 +228,14 @@ namespace FlashCards.Server.Controllers
 						Message = "UNAUTHORIZED"
 					});
 				}
-
-				var res = await _cardService.GetCardsForSet(userId, setId);
-				return StatusCode((int)res.StatusCode, res);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, $"Exception in CardController:GetCardsForSet({setId})");
-				return StatusCode(500, new StandardResponse()
-				{
-					Success = false,
-					StatusCode = System.Net.HttpStatusCode.Unauthorized,
-					Message = "EXCEPTION"
-				});
-			}
-		}
-
-		[HttpPatch("[action]")]
-		[Authorize]
-		public async Task<IActionResult> EditCards(EditCardsRequest request)
-		{
-			try
-			{
-				if (!AuthHelper.GetUserIdFromContextUser(HttpContext.User, out var userId))
-				{
-					return Unauthorized(new StandardResponse()
-					{
-						Success = false,
-						StatusCode = System.Net.HttpStatusCode.Unauthorized,
-						Message = "UNAUTHORIZED"
-					});
-				}
-
 				request.UserId = userId;
-				var res = await _cardService.EditCards(request);
+
+				var res = await _collectionService.RemoveSetsFromCollection(request);
 				return StatusCode((int)res.StatusCode, res);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Exception in CardController:EditCards({JsonSerializer.Serialize(request)})");
+				_logger.LogError(ex, $"Exception in CollectionController:RemoveSetsFromCollection({JsonSerializer.Serialize(request)})");
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
@@ -276,9 +245,9 @@ namespace FlashCards.Server.Controllers
 			}
 		}
 
-		[HttpDelete("[action]")]
+		[HttpGet("[action]/{collectionId}")]
 		[Authorize]
-		public async Task<IActionResult> DeleteCards(DeleteCardsRequest request)
+		public async Task<IActionResult> GetCardsForCollection([FromRoute] long collectionId)
 		{
 			try
 			{
@@ -292,13 +261,12 @@ namespace FlashCards.Server.Controllers
 					});
 				}
 
-				request.UserId = userId;
-				var res = await _cardService.DeleteCards(request);
+				var res = await _collectionService.GetCardsForCollection(userId, collectionId);
 				return StatusCode((int)res.StatusCode, res);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Exception in CardController:DeleteCards({JsonSerializer.Serialize(request)})");
+				_logger.LogError(ex, $"Exception in CollectionController:RemoveSetsFromCollection({collectionId})");
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,

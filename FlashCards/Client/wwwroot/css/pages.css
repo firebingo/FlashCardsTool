@@ -1,0 +1,29 @@
+﻿.contentRootContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.contentHeader {
+    height: 35px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.contentContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    align-content: flex-start;
+    overflow: auto;
+}
+
+@media only screen and (max-width: 768px) {
+    .contentContainer {
+        overflow: auto;
+    }
+}

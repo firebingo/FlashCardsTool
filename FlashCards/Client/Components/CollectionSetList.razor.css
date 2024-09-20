@@ -1,0 +1,51 @@
+﻿.collectionSetList {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+    .collectionSetList ::deep .rz-chkbox-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .collectionSetList ::deep .rz-checkbox {
+        user-select: none;
+    }
+
+    .collectionSetList ::deep .rz-checkbox-list-vertical .rz-checkbox:first-child {
+        margin-top: 0;
+    }
+
+    .collectionSetList ::deep .rz-checkbox-list-vertical .rz-checkbox:last-child {
+        margin-bottom: 0;
+    }
+
+.collectionSetListInner {
+    border: 1px solid var(--base-border-color);
+    border-radius: var(--border-radius);
+    padding: 6px;
+    max-height: 350px;
+    overflow: auto;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+}
+
+    .collectionSetListInner .loaderFlex {
+        margin: auto;
+    }
+
+    h3 {
+        margin: 0;
+    }
+
+@media only screen and (max-width: 768px) {
+    .collectionSetList {
+        min-height: 0;
+    }
+
+    .collectionSetListInner {
+        max-height: 100%;
+    }
+}
