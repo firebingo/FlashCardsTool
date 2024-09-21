@@ -2,7 +2,7 @@
 @inject HttpClient _httpClient
 @inject NavigationManager _navManager
 @inject DialogService _dialogService
-@page "/Decks/{Id}/Game"
+@page "/Collections/{Id}/Game"
 
 @if (_loading)
 {
@@ -45,8 +45,8 @@ else
         else if (_prep)
         {
             <div class="prepContainer">
-                <h3>@_sourceCards.SetName</h3>
-                <div>@($"This deck has {_sourceCards.Cards.Count} cards.")</div>
+                <h3>@_sourceCards.CollectionName</h3>
+                <div>@($"This collection has {_sourceCards.Cards.Count} cards.")</div>
                 <div class="prepOptions">
                     <div class="inputField">
                         <label>Order:</label>

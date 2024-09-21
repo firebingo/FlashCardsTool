@@ -2,20 +2,20 @@
     margin-right: 8px;
 }
 
-.contentHeader .deckHeaderTitle {
+.contentHeader .collectionHeaderTitle {
     display: flex;
     align-items: center;
     margin-right: 8px;
     overflow: auto;
     overflow-wrap: anywhere;
-    max-width: 80%;
+    max-width: 65%;
 }
 
-    .contentHeader .deckHeaderTitle h2 {
+    .contentHeader .collectionHeaderTitle h2 {
         margin: 0;
     }
 
-.contentHeader .deckHeaderButtons {
+.contentHeader .collectionHeaderButtons {
     display: flex;
     align-items: center;
 }
@@ -120,19 +120,19 @@
     }
 
 @media only screen and (max-width: 1366px) {
-    .contentHeader .deckHeaderTitle {
+    .contentHeader .collectionHeaderTitle {
         max-width: 75%;
     }
 }
 
 @media only screen and (max-width: 1100px) {
-    .contentHeader .deckHeaderTitle {
+    .contentHeader .collectionHeaderTitle {
         max-width: 70%;
     }
 }
 
 @media only screen and (max-width: 950px) {
-    .contentHeader .deckHeaderTitle {
+    .contentHeader .collectionHeaderTitle {
         max-width: 60%;
     }
 }
@@ -156,22 +156,22 @@
         height: auto;
     }
 
-        .contentHeader .deckHeaderTitle {
+        .contentHeader .collectionHeaderTitle {
             display: flex;
             align-items: baseline;
             margin: 4px 0 4px 0;
         }
 
-            .contentHeader .deckHeaderTitle h2 {
+            .contentHeader .collectionHeaderTitle h2 {
                 margin: 0
             }
 
-                .contentHeader .deckHeaderTitle h2 span {
+                .contentHeader .collectionHeaderTitle h2 span {
                     font-size: var(--f16);
                     font-weight: normal;
                 }
 
-        .contentHeader .deckHeaderButtons {
+        .contentHeader .collectionHeaderButtons {
             display: flex;
             align-items: center;
             height: 35px;

@@ -56,8 +56,13 @@
         flex-direction: column;
     }
 
+    .baseModalBody ::deep form {
+        min-height: 0;
+    }
+
     .baseModalBody {
         height: 100%;
+        min-height: 0;
     }
 }
 

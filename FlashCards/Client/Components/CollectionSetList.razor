@@ -1,0 +1,33 @@
+﻿@using FlashCards.Client.Models
+@using FlashCards.Shared.ViewModels
+<div class="collectionSetList">
+    <h3>Selected Decks</h3>
+    <div class="collectionSetListInner">
+        @if (Loading)
+        {
+            <div class="loaderFlex">
+                <Loader />
+            </div>
+        }
+        else
+        {
+            <RadzenCheckBoxList Data="@Decks" Value="@Selected" ValueChanged="@OnListChanged" TValue="long" TextProperty="SetName" ValueProperty="Id" Orientation="Orientation.Vertical" />
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<CardSetView> Decks { get; set; } = [];
+    [Parameter]
+    public IEnumerable<long> Selected { get; set; } = [];
+    [Parameter]
+    public EventCallback<IEnumerable<long>> SelectedChanged { get; set; }
+    [Parameter]
+    public bool Loading { get; set; } = false;
+
+    async void OnListChanged(IEnumerable<long> e)
+    {
+        await SelectedChanged.InvokeAsync(e);
+    }
+}

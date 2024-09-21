@@ -12,7 +12,7 @@ using System.Timers;
 
 namespace FlashCards.Client.Pages
 {
-	public partial class DeckGame : ComponentBase, IDisposable
+	public partial class CollectionGame : ComponentBase, IDisposable
 	{
 		[Parameter]
 		public string Id { get; set; } = string.Empty;
@@ -43,7 +43,7 @@ namespace FlashCards.Client.Pages
 			{
 				if (!long.TryParse(Id, out var l))
 				{
-					_errorMessage = "Deck not found";
+					_errorMessage = "Collection not found";
 					return;
 				}
 				else
@@ -65,7 +65,7 @@ namespace FlashCards.Client.Pages
 					}
 				];
 
-				using var getCardsRes = await _httpClient.GetAsync($"/api/Card/GetCardsForSet/{_id}");
+				using var getCardsRes = await _httpClient.GetAsync($"/api/Collection/GetCardsForCollection/{_id}");
 				var cardsS = await getCardsRes.Content.ReadAsStringAsync();
 				if (!getCardsRes.IsSuccessStatusCode || string.IsNullOrWhiteSpace(cardsS) || !cardsS.StartsWith('{'))
 				{

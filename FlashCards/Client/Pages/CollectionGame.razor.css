@@ -10,14 +10,14 @@
         margin-left: auto;
     }
 
-    .cardListing {
-        width: 320px;
-        height: 200px;
-        background-color: var(--base-bg-color);
-        display: flex;
-        position: relative;
-        cursor: pointer;
-    }
+.cardListing {
+    width: 320px;
+    height: 200px;
+    background-color: var(--base-bg-color);
+    display: flex;
+    position: relative;
+    cursor: pointer;
+}
 
     .cardListing:hover .cardValues {
         border-color: var(--hover-border-color);

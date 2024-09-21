@@ -28,5 +28,6 @@ namespace FlashCards.Server.Data.Models
 		public DateTime ModifiedTime { get; set; } = DateTime.MinValue;
 
 		public virtual ICollection<CardSet>? CardSets { get; set; }
+		public virtual ICollection<CardSetCollection>? Collections { get; set; }
 	}
 }

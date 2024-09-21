@@ -88,6 +88,7 @@ namespace FlashCards
 			builder.Services.AddTransient<UserManager>();
 			builder.Services.AddScoped<AccountService>();
 			builder.Services.AddScoped<CardService>();
+			builder.Services.AddScoped<CollectionService>();
 			builder.Services.AddScoped<CookieAuthEvents>();
 
 			var app = builder.Build();

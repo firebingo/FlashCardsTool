@@ -12,8 +12,8 @@
 }
 else
 {
-    <div class="decksRootContainer">
-        <div class="decksHeader">
+    <div class="contentRootContainer">
+        <div class="contentHeader">
             <button class="positive" @onclick="OnNewDeckClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">New Deck</button>
         </div>
         @if (!string.IsNullOrWhiteSpace(_errorMessage))
@@ -24,7 +24,7 @@ else
         }
         else
         {
-            <div class="decksContainer">
+            <div class="contentContainer">
                 @foreach (var deck in _decks)
                 {
                     <div class="deckListing" @onclick="() => OnDeckClicked(deck.Id)">

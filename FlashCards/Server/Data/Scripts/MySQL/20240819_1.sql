@@ -1,0 +1,3 @@
+use {{dbname}};
+create table cardSetCollection(id bigint not null AUTO_INCREMENT, userId bigint not null, collectionName varchar(128) not null, createdTime datetime not null, modifiedTime datetime not null, primary key(id), constraint kf_collectionUserId foreign key (userId) references users(id) on delete cascade);
+create table cardSetCollectionSets(collectionId bigint not null, setId bigint not null, createdTime datetime not null, modifiedTime datetime not null, primary key(collectionId, setId), constraint kf_collectionCardSetId foreign key (setId) references cardSet(id) on delete cascade, constraint kf_collectionId foreign key (collectionId) references cardSetCollection(id) on delete cascade);

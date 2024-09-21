@@ -104,7 +104,7 @@ namespace FlashCards.Client.Pages
 			if (deck == null)
 				return;
 
-			await _dialogService.OpenAsync<EditDeck>("EditCard",
+			await _dialogService.OpenAsync<EditDeck>("EditDeck",
 				new Dictionary<string, object>()
 				{
 					{ "SetId", id },

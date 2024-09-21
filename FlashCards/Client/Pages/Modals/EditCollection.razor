@@ -1,0 +1,215 @@
+﻿@using FlashCards.Shared.ViewModels;
+@using FlashCards.Client.Components;
+@using Radzen;
+@using System.Text.Json;
+@using System.ComponentModel.DataAnnotations;
+@using System.Text;
+@inject DialogService _dialogService
+@inject HttpClient _httpClient
+
+<ModalBase Title="Edit Collection" CloseCallback="OnClose">
+    <ModalBody>
+        <EditForm EditContext="_editContext">
+            <DataAnnotationsValidator />
+            <div class="inputField">
+                <label>Name:</label>
+                <InputText @bind-Value="_formModel!.Name" />
+                <div class="inputFieldError">
+                    <ValidationMessage For="@(() => _formModel!.Name)" />
+                </div>
+            </div>
+            <CollectionSetList @bind-Selected=_formModel.SelectedSets Loading=_loadingDecks Decks="_decks" />
+        </EditForm>
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="baseModalError error">
+                @_error
+            </div>
+        }
+    </ModalBody>
+    <ModalButtons>
+        <button class="positive" disabled="@_saving" @onclick="Submit">Save</button>
+    </ModalButtons>
+</ModalBase>
+
+@code {
+    [Parameter]
+    public CardCollectionView Collection { get; set; } = new CardCollectionView();
+    [Parameter]
+    public Func<string, Task>? CompleteCallback { get; set; }
+
+    EditContext? _editContext;
+    FormModel? _formModel { get; set; }
+    string _error { get; set; } = string.Empty;
+    bool _loadingCollection { get; set; } = true;
+    bool _loadingDecks { get; set; } = true;
+    bool _saving { get; set; }
+    List<CardSetView> _decks { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _formModel ??= new FormModel()
+        {
+            Name = Collection.CollectionName,
+            SelectedSets = Collection.DeckIds.ToList()
+        };
+        _editContext = new EditContext(_formModel);
+
+        try
+        {
+            using var getCardsRes = await _httpClient.GetAsync("/api/Card/GetCardSets");
+            var cardsS = await getCardsRes.Content.ReadAsStringAsync();
+            if (!getCardsRes.IsSuccessStatusCode || string.IsNullOrWhiteSpace(cardsS) || !cardsS.StartsWith('{'))
+            {
+                _error = $"Failed to load decks. ({getCardsRes.StatusCode})";
+                return;
+            }
+            var decks = JsonSerializer.Deserialize<StandardResponse<List<CardSetView>>>(cardsS, DefaultJsonOptions.DefaultOptions);
+            if (decks?.Data == null || !decks.Success)
+            {
+                _error = string.IsNullOrWhiteSpace(decks?.Message) ? $"Failed to load decks. ({getCardsRes.StatusCode})" : decks.Message;
+                return;
+            }
+            _decks = decks.Data;
+        }
+        catch
+        {
+            _error = $"Failed to load decks.";
+        }
+        _loadingDecks = false;
+    }
+
+    async Task Submit()
+    {
+        if (!_editContext!.Validate())
+        {
+            return;
+        }
+        await CreateCollection();
+    }
+
+    async Task CreateCollection()
+    {
+        _saving = true;
+        _error = string.Empty;
+
+        if (!string.Equals(_formModel!.Name, Collection.CollectionName))
+        {
+            try
+            {
+                var patchModel = new EditCardCollectionRequest()
+                    {
+                        CollectionId = Collection.Id,
+                        Name = _formModel.Name
+                    };
+                using var patchContent = new StringContent(JsonSerializer.Serialize(patchModel, DefaultJsonOptions.DefaultOptions), Encoding.UTF8, "application/json");
+                using var patchRes = await _httpClient.PatchAsync("/api/collection/EditCardCollection", patchContent);
+                var patchResS = await patchRes.Content.ReadAsStringAsync();
+                if (!patchRes.IsSuccessStatusCode || string.IsNullOrWhiteSpace(patchResS) || !patchResS.StartsWith('{'))
+                {
+                    _error = $"Error saving collection. ({patchRes.StatusCode})";
+                    _saving = false;
+                    return;
+                }
+                var setsResult = JsonSerializer.Deserialize<StandardResponse>(patchResS, DefaultJsonOptions.DefaultOptions);
+                if (setsResult?.Success != true)
+                {
+                    _error = $"Error saving collection. ({patchRes.StatusCode})";
+                    _saving = false;
+                    return;
+                }
+            }
+            catch
+            {
+                _error = "Error saving collection.";
+                return;
+            }
+        }
+
+        var added = _formModel.SelectedSets.Except(Collection.DeckIds);
+        if (added.Any())
+        {
+            try
+            {
+                var postModel = new AddSetsToCollectionRequest()
+                    {
+                        CollectionId = Collection.Id,
+                        SetIds = added.ToList()
+                    };
+                using var postContent = new StringContent(JsonSerializer.Serialize(postModel, DefaultJsonOptions.DefaultOptions), Encoding.UTF8, "application/json");
+                using var postRes = await _httpClient.PostAsync("/api/collection/AddSetsToCollection", postContent);
+                var postResS = await postRes.Content.ReadAsStringAsync();
+                if (!postRes.IsSuccessStatusCode || string.IsNullOrWhiteSpace(postResS) || !postResS.StartsWith('{'))
+                {
+                    _error = $"Error adding decks to collection. ({postRes.StatusCode})";
+                    _saving = false;
+                    return;
+                }
+                var setsResult = JsonSerializer.Deserialize<StandardResponse>(postResS, DefaultJsonOptions.DefaultOptions);
+                if (setsResult?.Success != true)
+                {
+                    _error = $"Error adding decks to collection. ({postRes.StatusCode})";
+                    _saving = false;
+                    return;
+                }
+            }
+            catch
+            {
+                _error = "Error adding decks to collection.";
+                return;
+            }
+        }
+
+        var removed = Collection.DeckIds.Except(_formModel.SelectedSets);
+        if (removed.Any())
+        {
+            try
+            {
+                var postModel = new RemoveSetsFromCollectionRequest()
+                    {
+                        CollectionId = Collection.Id,
+                        SetIds = removed.ToList()
+                    };
+                using var postContent = new StringContent(JsonSerializer.Serialize(postModel, DefaultJsonOptions.DefaultOptions), Encoding.UTF8, "application/json");
+                using var postRes = await _httpClient.PostAsync("/api/collection/RemoveSetsFromCollection", postContent);
+                var postResS = await postRes.Content.ReadAsStringAsync();
+                if (!postRes.IsSuccessStatusCode || string.IsNullOrWhiteSpace(postResS) || !postResS.StartsWith('{'))
+                {
+                    _error = $"Error adding decks to collection. ({postRes.StatusCode})";
+                    _saving = false;
+                    return;
+                }
+                var setsResult = JsonSerializer.Deserialize<StandardResponse>(postResS, DefaultJsonOptions.DefaultOptions);
+                if (setsResult?.Success != true)
+                {
+                    _error = $"Error adding decks to collection. ({postRes.StatusCode})";
+                    _saving = false;
+                    return;
+                }
+            }
+            catch
+            {
+                _error = "Error adding decks to collection.";
+                return;
+            }
+        }
+
+        _saving = false;
+        _dialogService.Close();
+        if (CompleteCallback != null)
+            await CompleteCallback(_formModel!.Name);
+    }
+
+    void OnClose()
+    {
+        _dialogService.Close();
+    }
+
+    class FormModel
+    {
+        [Required(ErrorMessage = "Required")]
+        [StringLength(128, ErrorMessage = "Max length of 128")]
+        public string Name { get; set; } = string.Empty;
+        public IEnumerable<long> SelectedSets { get; set; } = [];
+    }
+}

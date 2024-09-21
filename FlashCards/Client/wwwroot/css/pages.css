@@ -1,0 +1,103 @@
+﻿.contentRootContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.contentHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.contentContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    align-content: flex-start;
+    overflow: auto;
+}
+
+.gameRootContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.gameHeader {
+    height: 35px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+    .gameHeader button:last-child {
+        margin-left: 8px;
+    }
+
+    .gameHeader div {
+        margin-left: 10px;
+    }
+
+.prepContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    align-items: center;
+}
+
+    .prepContainer h3 {
+        text-align: center;
+    }
+
+.prepOptions {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+    .prepOptions button {
+        align-self: center;
+    }
+
+.gameContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+}
+
+.gameElementsContainer {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+}
+
+.gameConfirmButtons {
+    display: flex;
+    margin-top: 8px;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+    .gameConfirmButtons button {
+        width: 140px;
+        line-height: 1;
+    }
+
+        .gameConfirmButtons button span {
+            font-size: var(--f28);
+        }
+
+@media only screen and (max-width: 768px) {
+    .contentContainer {
+        overflow: auto;
+    }
+}

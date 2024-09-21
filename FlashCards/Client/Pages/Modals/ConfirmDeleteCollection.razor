@@ -6,10 +6,10 @@
 @inject DialogService _dialogService
 @inject HttpClient _httpClient
 
-<ModalBase Title="Delete Deck" CloseCallback="OnClose">
+<ModalBase Title="Delete Collection" CloseCallback="OnClose">
     <ModalBody>
         <div class="modalWrapText">
-            @($"Are you sure you want to delete deck {Deck?.SetName}? This deck contains {Deck?.CardCount} cards.")
+            @($"Are you sure you want to delete collection {Collection?.CollectionName}? This collection references {Collection?.DeckIds?.Count} decks.")
         </div>
         @if (!string.IsNullOrWhiteSpace(_error))
         {
@@ -28,37 +28,37 @@
     [Parameter]
     public Func<Task>? CompleteCallback { get; set; }
     [Parameter]
-    public CardSetView Deck { get; set; } = new CardSetView();
+    public CardCollectionView Collection { get; set; } = new CardCollectionView();
 
     string _error { get; set; } = string.Empty;
     bool _loading { get; set; }
 
     protected override void OnInitialized()
     {
-        
+
     }
 
     async Task Submit()
     {
-        await DeleteDeck();
+        await DeleteCollection();
     }
 
-    async Task DeleteDeck()
+    async Task DeleteCollection()
     {
         _loading = true;
         _error = string.Empty;
-        using var res = await _httpClient.DeleteAsync($"/api/card/DeleteCardSet/{Deck.Id}");
+        using var res = await _httpClient.DeleteAsync($"/api/collection/DeleteCardCollection/{Collection.Id}");
         var resS = await res.Content.ReadAsStringAsync();
         if (!res.IsSuccessStatusCode || string.IsNullOrWhiteSpace(resS) || !resS.StartsWith('{'))
         {
-            _error = $"Error deleting deck. ({res.StatusCode})";
+            _error = $"Error deleting collection. ({res.StatusCode})";
             _loading = false;
             return;
         }
         var result = JsonSerializer.Deserialize<StandardResponse>(resS, DefaultJsonOptions.DefaultOptions);
         if (result?.Success != true)
         {
-            _error = $"Error deleting deck. ({res.StatusCode})";
+            _error = $"Error deleting collection. ({res.StatusCode})";
             _loading = false;
             return;
         }
