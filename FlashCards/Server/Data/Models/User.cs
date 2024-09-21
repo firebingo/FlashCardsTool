@@ -15,7 +15,7 @@ namespace FlashCards.Server.Data.Models
 		[Column("username")]
 		public string UserName { get; set; } = string.Empty;
 		[Column("password")]
-		public ulong Password { get; set; }
+		public string Password { get; set; } = string.Empty;
 		[Column("requiresNewPassword")]
 		public bool RequiresNewPassword { get; set; }
 		[Column("salt")]
