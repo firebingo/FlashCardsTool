@@ -34,6 +34,7 @@ namespace FlashCards.Client.Pages
 		public OrderOptionValue SelectOrderOption { get; set; }
 		public bool Shuffle { get; set; }
 		public bool Timer { get; set; }
+		public bool ShowProgress { get; set; }
 		public bool Flipped { get; set; }
 
 		protected override async Task OnInitializedAsync()

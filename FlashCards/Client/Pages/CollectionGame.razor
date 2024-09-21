@@ -23,6 +23,12 @@ else
                         @(_currentTime.ToString(@"hh\:mm\:ss\.f"))
                     </div>
                 }
+                @if (ShowProgress)
+                {
+                    <div class="gameProgress">
+                        @($"Progress: {_currentIndex + 1} / {_cards.Count}")
+                    </div>
+                }
             }
             else if (!_prep && _results)
             {
@@ -58,6 +64,10 @@ else
                     <div class="inputCheckField">
                         <label>Timer:</label>
                         <RadzenSwitch @bind-Value=@Timer />
+                    </div>
+                    <div class="inputCheckField">
+                        <label>Show Progress:</label>
+                        <RadzenSwitch @bind-Value=@ShowProgress />
                     </div>
                     <div class="inputCheckField">
                         <label>Flipped:</label>

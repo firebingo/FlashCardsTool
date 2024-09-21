@@ -6,7 +6,6 @@
 }
 
 .contentHeader {
-    height: 35px;
     display: flex;
     align-items: center;
     margin-bottom: 10px;
@@ -36,8 +35,12 @@
     margin-bottom: 10px;
 }
 
-    .gameHeader button {
-        margin-right: 8px;
+    .gameHeader button:last-child {
+        margin-left: 8px;
+    }
+
+    .gameHeader div {
+        margin-left: 10px;
     }
 
 .prepContainer {

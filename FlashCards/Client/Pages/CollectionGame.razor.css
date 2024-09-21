@@ -6,6 +6,10 @@
     padding: 4px;
 }
 
+    .inputCheckField ::deep .rz-switch {
+        margin-left: auto;
+    }
+
 .cardListing {
     width: 320px;
     height: 200px;
