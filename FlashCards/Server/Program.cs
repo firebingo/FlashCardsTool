@@ -81,7 +81,7 @@ namespace FlashCards
 			builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 			builder.Services.AddIdGen(settings.UserSettings.IdGenId);
 			if (settings.DbSettings.Type == DbSettingsType.MySql)
-				builder.Services.AddDbContext<ServiceDbContext>(options => options.UseMySQL(settings.DbSettings.FullConnectionString));
+				builder.Services.AddDbContext<ServiceDbContext>(options => options.UseMySql(settings.DbSettings.FullConnectionString, ServerVersion.AutoDetect(settings.DbSettings.FullConnectionString)));
 			else if (settings.DbSettings.Type == DbSettingsType.SqlLite)
 				builder.Services.AddDbContext<ServiceDbContext>(options => options.UseSqlite(settings.DbSettings.FullConnectionString));
 

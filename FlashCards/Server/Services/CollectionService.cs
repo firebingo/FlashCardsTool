@@ -88,7 +88,7 @@ namespace FlashCards.Server.Services
 						Id = -1,
 						CollectionName = "All Cards",
 						DeckIds = deckIds,
-						CardCount = await _dbContext.Card.Where(x => deckIds.Contains(x.SetId)).CountAsync()
+						CardCount = await _dbContext.Card.Where(x => EF.Constant(deckIds).Contains(x.SetId)).CountAsync()
 					};
 				}
 				else
@@ -106,7 +106,7 @@ namespace FlashCards.Server.Services
 
 					var decks = await _dbContext.CardCollectionSets.Where(x => x.CollectionId == set.Id).ToListAsync();
 					var deckIds = decks.Select(x => x.SetId).ToList();
-					var cardCount = await _dbContext.Card.CountAsync(x => deckIds.Contains(x.SetId));
+					var cardCount = await _dbContext.Card.CountAsync(x => EF.Constant(deckIds).Contains(x.SetId));
 					collectionView = new CardCollectionView()
 					{
 						Id = set.Id,
@@ -153,7 +153,7 @@ namespace FlashCards.Server.Services
 				{
 					var decks = await _dbContext.CardCollectionSets.Where(x => x.CollectionId == set.Id).ToListAsync();
 					var deckIds = decks.Select(x => x.SetId).ToList();
-					var cardCount = await _dbContext.Card.CountAsync(x => deckIds.Contains(x.SetId));
+					var cardCount = await _dbContext.Card.CountAsync(x => EF.Constant(deckIds).Contains(x.SetId));
 					viewSets.Add(new CardCollectionView()
 					{
 						Id = set.Id,
@@ -268,7 +268,7 @@ namespace FlashCards.Server.Services
 					};
 				}
 
-				var cardSets = await _dbContext.CardSet.Where(x => request.SetIds.Contains(x.Id)).ToListAsync();
+				var cardSets = await _dbContext.CardSet.Where(x => EF.Constant(request.SetIds).Contains(x.Id)).ToListAsync();
 				if (cardSets.Count == 0)
 				{
 					return new StandardResponse<List<long>>()
@@ -332,7 +332,7 @@ namespace FlashCards.Server.Services
 					};
 				}
 
-				var cardSets = await _dbContext.CardSet.Where(x => request.SetIds.Contains(x.Id)).ToListAsync();
+				var cardSets = await _dbContext.CardSet.Where(x => EF.Constant(request.SetIds).Contains(x.Id)).ToListAsync();
 				if (cardSets.Count == 0)
 				{
 					return new StandardResponse<List<long>>()
@@ -344,7 +344,7 @@ namespace FlashCards.Server.Services
 				}
 
 				var checkSets = cardSets.Select(x => x.Id).ToArray();
-				var collectionSets = (await _dbContext.CardCollectionSets.Where(x => x.CollectionId == collection.Id && checkSets.Contains(x.SetId)).ToListAsync());
+				var collectionSets = (await _dbContext.CardCollectionSets.Where(x => x.CollectionId == collection.Id && EF.Constant(checkSets).Contains(x.SetId)).ToListAsync());
 				if (collectionSets.Count != 0)
 				{
 					_dbContext.CardCollectionSets.RemoveRange(collectionSets);
@@ -411,7 +411,15 @@ namespace FlashCards.Server.Services
 					}
 					if (collection.CollectionSets == null || collection.CollectionSets.Count == 0)
 					{
-						return new StandardResponse<CardsView>();
+						return new StandardResponse<CardsView>()
+						{
+							Data = new CardsView()
+							{
+								CollectionId = collection.Id,
+								CollectionName = collection.CollectionName,
+								Cards = new List<CardView>()
+							}
+						};
 					}
 
 					foreach (var collectionSet in collection.CollectionSets)

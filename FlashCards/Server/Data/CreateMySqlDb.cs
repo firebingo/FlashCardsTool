@@ -2,7 +2,7 @@
 using FlashCards.Shared.Util;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -28,6 +28,7 @@ namespace FlashCards.Server.Data
 				string? nameCheck = null;
 				using (var command = connection.CreateCommand())
 				{
+					command.Transaction = transaction;
 					command.CommandText = $"SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{settings.DbSettings.DbName}'";
 					nameCheck = (await command.ExecuteScalarAsync()) as string;
 				}
