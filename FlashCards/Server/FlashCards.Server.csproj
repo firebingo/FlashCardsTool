@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -12,11 +12,13 @@
 
   <ItemGroup>
     <None Remove="Data\Scripts\MySQL\20240819_1.sql" />
+    <None Remove="Data\Scripts\MySQL\20250117_1.sql" />
     <None Remove="Data\Scripts\MySQL\init.sql" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Data\Scripts\MySQL\20240819_1.sql" />
+    <EmbeddedResource Include="Data\Scripts\MySQL\20250117_1.sql" />
     <EmbeddedResource Include="Data\Scripts\MySQL\init.sql" />
   </ItemGroup>
 

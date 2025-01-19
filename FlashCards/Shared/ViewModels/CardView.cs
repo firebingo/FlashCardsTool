@@ -19,6 +19,10 @@ namespace FlashCards.Shared.ViewModels
 		public long SetId { get; set; }
 		public string? FrontValue { get; set; }
 		public string? BackValue { get; set; }
+		public int PassCount { get; set; }
+		public int MissCount { get; set; }
+		public DateTime? LastPass { get; set; }
+		public DateTime? LastMiss { get; set; }
 		public DateTime ModifiedTime { get; set; }
 		[JsonIgnore]
 		public bool Flipped { get; set; }

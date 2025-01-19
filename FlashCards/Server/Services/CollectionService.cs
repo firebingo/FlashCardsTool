@@ -389,6 +389,10 @@ namespace FlashCards.Server.Services
 						SetId = x.SetId,
 						BackValue = x.BackValue,
 						FrontValue = x.FrontValue,
+						PassCount = x.PassCount,
+						MissCount = x.MissCount,
+						LastPass = x.LastPass,
+						LastMiss = x.LastMiss,
 						ModifiedTime = x.ModifiedTime
 					}).ToList();
 				}
@@ -417,7 +421,7 @@ namespace FlashCards.Server.Services
 							{
 								CollectionId = collection.Id,
 								CollectionName = collection.CollectionName,
-								Cards = new List<CardView>()
+								Cards = []
 							}
 						};
 					}
@@ -432,6 +436,10 @@ namespace FlashCards.Server.Services
 								SetId = x.SetId,
 								BackValue = x.BackValue,
 								FrontValue = x.FrontValue,
+								PassCount = x.PassCount,
+								MissCount = x.MissCount,
+								LastPass = x.LastPass,
+								LastMiss = x.LastMiss,
 								ModifiedTime = x.ModifiedTime
 							}));
 						}

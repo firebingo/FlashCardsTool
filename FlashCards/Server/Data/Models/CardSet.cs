@@ -15,6 +15,8 @@ namespace FlashCards.Server.Data.Models
 		public long UserId { get; set; }
 		[Column("setName")]
 		public string SetName { get; set; } = string.Empty;
+		[Column("excludeFromStats")]
+		public bool ExcludeFromStats { get; set; }
 		[Column("createdTime")]
 		public DateTime CreatedTime { get; set; } = DateTime.MinValue;
 		[Column("modifiedTime")]
@@ -23,5 +25,6 @@ namespace FlashCards.Server.Data.Models
 		public virtual User? User { get; set; }
 		public virtual ICollection<Card>? Cards { get; set; }
 		public virtual ICollection<CardSetCollectionSets>? CollectionSets { get; set; }
+		public virtual ICollection<PlayStats>? PlayStats { get; set; }
 	}
 }

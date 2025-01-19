@@ -22,5 +22,6 @@ namespace FlashCards.Server.Data.Models
 
 		public virtual User? User { get; set; }
 		public virtual ICollection<CardSetCollectionSets>? CollectionSets { get; set; }
+		public virtual ICollection<PlayStats>? PlayStats { get; set; }
 	}
 }

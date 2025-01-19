@@ -175,3 +175,23 @@ content-type: application/json
 GET https://localhost:7062/api/collection/GetCardsForCollection/1 HTTP/1.1
 
 ###
+
+PUT https://localhost:7062/api/playstats/recordplay HTTP/1.1
+content-type: application/json
+
+{
+    "setId": 1,
+    "playTime": "00:05:00.52465",
+    "cards": [
+        { 
+            "setId": 1,
+            "cardId": 1,
+            "pass": true
+        },
+        { 
+            "setId": 1,
+            "cardId": 2,
+            "pass": true
+        }
+    ]
+}

@@ -6,10 +6,13 @@ namespace FlashCards.Client.Models
 	public class CardViewGame
 	{
 		public long Id { get; set; }
+		public long SetId { get; set; }
 		public string? FrontValue { get; set; }
 		public string? BackValue { get; set; }
 		public bool Flipped { get; set; }
 		public bool Correct { get; set; }
+		public int PassCount { get; set; }
+		public int MissCount { get; set; }
 		public DateTime StartTime { get; set; }
 		public DateTime EndTime { get; set; }
 		public TimeSpan Time
@@ -25,8 +28,11 @@ namespace FlashCards.Client.Models
 		public CardViewGame(CardView card)
 		{
 			Id = card.Id;
+			SetId = card.SetId;
 			FrontValue = card.FrontValue;
 			BackValue = card.BackValue;
+			PassCount = card.PassCount;
+			MissCount = card.MissCount;
 		}
 	}
 }

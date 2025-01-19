@@ -50,7 +50,7 @@ namespace FlashCards.Server.Controllers
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
-					StatusCode = System.Net.HttpStatusCode.Unauthorized,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
 					Message = "EXCEPTION"
 				});
 			}
@@ -81,7 +81,7 @@ namespace FlashCards.Server.Controllers
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
-					StatusCode = System.Net.HttpStatusCode.Unauthorized,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
 					Message = "EXCEPTION"
 				});
 			}
@@ -112,7 +112,7 @@ namespace FlashCards.Server.Controllers
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
-					StatusCode = System.Net.HttpStatusCode.Unauthorized,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
 					Message = "EXCEPTION"
 				});
 			}
@@ -144,7 +144,7 @@ namespace FlashCards.Server.Controllers
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
-					StatusCode = System.Net.HttpStatusCode.Unauthorized,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
 					Message = "EXCEPTION"
 				});
 			}
@@ -175,7 +175,7 @@ namespace FlashCards.Server.Controllers
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
-					StatusCode = System.Net.HttpStatusCode.Unauthorized,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
 					Message = "EXCEPTION"
 				});
 			}
@@ -207,7 +207,7 @@ namespace FlashCards.Server.Controllers
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
-					StatusCode = System.Net.HttpStatusCode.Unauthorized,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
 					Message = "EXCEPTION"
 				});
 			}
@@ -239,7 +239,7 @@ namespace FlashCards.Server.Controllers
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
-					StatusCode = System.Net.HttpStatusCode.Unauthorized,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
 					Message = "EXCEPTION"
 				});
 			}
@@ -270,7 +270,7 @@ namespace FlashCards.Server.Controllers
 				return StatusCode(500, new StandardResponse()
 				{
 					Success = false,
-					StatusCode = System.Net.HttpStatusCode.Unauthorized,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
 					Message = "EXCEPTION"
 				});
 			}

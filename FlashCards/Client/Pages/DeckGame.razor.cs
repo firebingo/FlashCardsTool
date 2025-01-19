@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Timers;
@@ -137,9 +139,41 @@ namespace FlashCards.Client.Pages
 			StateHasChanged();
 		}
 
-		private void OnSaveClicked()
+		private async Task OnSaveClicked()
 		{
-			//TODO: Save
+			_loading = true;
+			try
+			{
+				var putModel = new RecordPlayRequest()
+				{
+					SetId = _id,
+					PlayTime = _endTime - _startTime,
+					Cards = _cards.Select(x => new RecordPlayRequestCard()
+					{
+						CardId = x.Id,
+						SetId = x.SetId,
+						Pass = x.Correct
+					}).ToList()
+				};
+
+				using var content = new StringContent(JsonSerializer.Serialize(putModel, DefaultJsonOptions.DefaultOptions), Encoding.UTF8, "application/json");
+				using var putPlayRes = await _httpClient.PutAsync("/api/playstats/recordplay", content);
+				var playS = await putPlayRes.Content.ReadAsStringAsync();
+				if (!putPlayRes.IsSuccessStatusCode || string.IsNullOrWhiteSpace(playS) || !playS.StartsWith('{'))
+				{
+					_errorMessage = $"Failed to save result. ({putPlayRes.StatusCode})";
+					return;
+				}
+			}
+			catch
+			{
+				_errorMessage = $"Failed to save result. (EX)";
+			}
+			finally
+			{
+				_loading = false;
+				StateHasChanged();
+			}
 			ResetToPrep();
 		}
 

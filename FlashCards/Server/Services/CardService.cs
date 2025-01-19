@@ -270,6 +270,10 @@ namespace FlashCards.Server.Services
 							SetId = cardSet.Id,
 							BackValue = x.BackValue,
 							FrontValue = x.FrontValue,
+							PassCount = x.PassCount,
+							MissCount = x.MissCount,
+							LastPass = x.LastPass,
+							LastMiss = x.LastMiss,
 							ModifiedTime = x.ModifiedTime
 						}).ToList()
 				};
@@ -318,6 +322,10 @@ namespace FlashCards.Server.Services
 							SetId = set.Id,
 							BackValue = x.BackValue,
 							FrontValue = x.FrontValue,
+							PassCount = x.PassCount,
+							MissCount = x.MissCount,
+							LastPass = x.LastPass,
+							LastMiss = x.LastMiss,
 							ModifiedTime = x.ModifiedTime
 						}).ToList()
 					}
@@ -372,6 +380,10 @@ namespace FlashCards.Server.Services
 						SetId = set.Id,
 						FrontValue = dbCard.FrontValue,
 						BackValue = dbCard.BackValue,
+						PassCount = dbCard.PassCount,
+						MissCount = dbCard.MissCount,
+						LastPass = dbCard.LastPass,
+						LastMiss = dbCard.LastMiss,
 						ModifiedTime = dbCard.ModifiedTime,
 					});
 				}

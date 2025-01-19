@@ -12,10 +12,12 @@ namespace FlashCards.Server.Data
 
 		public DbSet<MetaData> MetaData { get; set; }
 		public DbSet<User> Users { get; set; }
+		public DbSet<UserSettings> UserSettings { get; set; }
 		public DbSet<CardSet> CardSet { get; set; }
 		public DbSet<Card> Card { get; set; }
 		public DbSet<CardSetCollection> CardCollection { get; set; }
 		public DbSet<CardSetCollectionSets> CardCollectionSets { get; set; }
+		public DbSet<PlayStats> PlayStats { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -30,9 +32,21 @@ namespace FlashCards.Server.Data
 				.HasMany(x => x.Collections)
 				.WithOne(x => x.User)
 				.HasForeignKey(x => x.UserId);
+			modelBuilder.Entity<User>()
+				.HasOne(x => x.UserSettings)
+				.WithOne(x => x.User)
+				.HasForeignKey<UserSettings>(x => x.UserId);
+			modelBuilder.Entity<User>()
+				.HasMany(x => x.PlayStats)
+				.WithOne(x => x.User)
+				.HasForeignKey(x => x.UserId);
 			modelBuilder.Entity<CardSet>()
 				.ToTable("cardSet")
 				.HasMany(x => x.Cards)
+				.WithOne(x => x.CardSet)
+				.HasForeignKey(x => x.SetId);
+			modelBuilder.Entity<CardSet>()
+				.HasMany(x => x.PlayStats)
 				.WithOne(x => x.CardSet)
 				.HasForeignKey(x => x.SetId);
 			modelBuilder.Entity<Card>()
@@ -40,6 +54,10 @@ namespace FlashCards.Server.Data
 			modelBuilder.Entity<CardSetCollection>()
 				.ToTable("cardSetCollection")
 				.HasMany(x => x.CollectionSets)
+				.WithOne(x => x.Collection)
+				.HasForeignKey(x => x.CollectionId);
+			modelBuilder.Entity<CardSetCollection>()
+				.HasMany(x => x.PlayStats)
 				.WithOne(x => x.Collection)
 				.HasForeignKey(x => x.CollectionId);
 			modelBuilder.Entity<CardSetCollectionSets>()
