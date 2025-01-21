@@ -383,18 +383,22 @@ namespace FlashCards.Server.Services
 						CollectionName = "All Cards"
 					};
 					var cardSets = await _dbContext.CardSet.Include(x => x.Cards).Where(x => x.UserId == userId).ToListAsync();
-					cards = cardSets.SelectMany(x => x.Cards ?? []).Select(x => new CardView()
+					foreach (var set in cardSets)
 					{
-						Id = x.Id,
-						SetId = x.SetId,
-						BackValue = x.BackValue,
-						FrontValue = x.FrontValue,
-						PassCount = x.PassCount,
-						MissCount = x.MissCount,
-						LastPass = x.LastPass,
-						LastMiss = x.LastMiss,
-						ModifiedTime = x.ModifiedTime
-					}).ToList();
+						cards.AddRange((set.Cards ?? []).Select(x => new CardView()
+						{
+							Id = x.Id,
+							SetId = x.SetId,
+							BackValue = x.BackValue,
+							FrontValue = x.FrontValue,
+							PassCount = x.PassCount,
+							MissCount = x.MissCount,
+							LastPass = x.LastPass,
+							LastMiss = x.LastMiss,
+							CardSetExcludeStats = set.ExcludeFromStats,
+							ModifiedTime = x.ModifiedTime
+						}));
+					}
 				}
 				else
 				{
@@ -440,6 +444,7 @@ namespace FlashCards.Server.Services
 								MissCount = x.MissCount,
 								LastPass = x.LastPass,
 								LastMiss = x.LastMiss,
+								CardSetExcludeStats = collectionSet.CardSet.ExcludeFromStats,
 								ModifiedTime = x.ModifiedTime
 							}));
 						}

@@ -23,6 +23,7 @@ namespace FlashCards.Shared.ViewModels
 		public int MissCount { get; set; }
 		public DateTime? LastPass { get; set; }
 		public DateTime? LastMiss { get; set; }
+		public bool CardSetExcludeStats { get; set; }
 		public DateTime ModifiedTime { get; set; }
 		[JsonIgnore]
 		public bool Flipped { get; set; }
@@ -30,5 +31,7 @@ namespace FlashCards.Shared.ViewModels
 		public bool DeleteConfirm { get; set; }
 		[JsonIgnore]
 		public bool Loading { get; set; }
+		[JsonIgnore]
+		public float PassPercent { get => (MissCount == 0 && PassCount == 0) ? 1.0f : ((float)PassCount / (PassCount + MissCount)); }
 	}
 }

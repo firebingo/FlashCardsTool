@@ -93,6 +93,11 @@ body {
     --f14: 0.875rem;
     --f12: 0.75rem;
     --f8: 0.5rem;
+    --color-percent-grad-red: #A00;
+    --color-percent-grad-yellow: #AA0;
+    --color-percent-grad-green: #0A0;
+    --color-percent-grad-purple: #A0A;
+    --color-percent-grad-blue: #0AA;
     display: flex;
     height: 100%;
     width: 100%;

@@ -274,6 +274,7 @@ namespace FlashCards.Server.Services
 							MissCount = x.MissCount,
 							LastPass = x.LastPass,
 							LastMiss = x.LastMiss,
+							CardSetExcludeStats = cardSet.ExcludeFromStats,
 							ModifiedTime = x.ModifiedTime
 						}).ToList()
 				};
@@ -326,6 +327,7 @@ namespace FlashCards.Server.Services
 							MissCount = x.MissCount,
 							LastPass = x.LastPass,
 							LastMiss = x.LastMiss,
+							CardSetExcludeStats = set.ExcludeFromStats,
 							ModifiedTime = x.ModifiedTime
 						}).ToList()
 					}
@@ -384,6 +386,7 @@ namespace FlashCards.Server.Services
 						MissCount = dbCard.MissCount,
 						LastPass = dbCard.LastPass,
 						LastMiss = dbCard.LastMiss,
+						CardSetExcludeStats = set.ExcludeFromStats,
 						ModifiedTime = dbCard.ModifiedTime,
 					});
 				}

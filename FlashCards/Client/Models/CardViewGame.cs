@@ -13,12 +13,14 @@ namespace FlashCards.Client.Models
 		public bool Correct { get; set; }
 		public int PassCount { get; set; }
 		public int MissCount { get; set; }
+		public bool CardSetExcludeStats { get; set; }
 		public DateTime StartTime { get; set; }
 		public DateTime EndTime { get; set; }
 		public TimeSpan Time
 		{
 			get => EndTime - StartTime;
 		}
+		public float PassPercent { get => (MissCount == 0 && PassCount == 0) ? 1.0f : ((float)PassCount / (PassCount + MissCount)); }
 
 		public CardViewGame()
 		{
@@ -33,6 +35,7 @@ namespace FlashCards.Client.Models
 			BackValue = card.BackValue;
 			PassCount = card.PassCount;
 			MissCount = card.MissCount;
+			CardSetExcludeStats = card.CardSetExcludeStats;
 		}
 	}
 }

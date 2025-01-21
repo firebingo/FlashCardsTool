@@ -152,5 +152,26 @@ namespace FlashCards.Server.Controllers
 				});
 			}
 		}
+
+		[HttpGet("[action]")]
+		[Authorize]
+		public async Task<IActionResult> GetUserSettings()
+		{
+			try
+			{
+				var res = await _accountService.GetUserSettings(HttpContext);
+				return StatusCode((int)res.StatusCode, res);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception in AccountController:GetUserSettings({HttpContext.User?.Identity?.Name})");
+				return StatusCode(500, new StandardResponse()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				});
+			}
+		}
 	}
 }

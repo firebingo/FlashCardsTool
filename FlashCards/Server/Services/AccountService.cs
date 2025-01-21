@@ -179,5 +179,53 @@ namespace FlashCards.Server.Services
 
 			return new StandardResponse();
 		}
+
+		public async Task<StandardResponse<UserSettingsResponse>> GetUserSettings(HttpContext context)
+		{
+			try
+			{
+				var userIdS = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+				if (!long.TryParse(userIdS, out var userId))
+				{
+					_logger.LogWarning($"Failed to get user claims: AccountService.GetUserSettings({context?.User?.Identity?.Name})");
+					return new StandardResponse<UserSettingsResponse>()
+					{
+						Success = false,
+						Message = "ERROR",
+						StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					};
+				}
+				var dbUser = (await _dbContext.UserSettings.Where(x => x.UserId == userId).ToListAsync()).FirstOrDefault();
+				if (dbUser == null)
+				{
+					_logger.LogWarning($"Failed to get user settings: AccountService.GetUserSettings({context?.User?.Identity?.Name})");
+					return new StandardResponse<UserSettingsResponse>()
+					{
+						Success = false,
+						Message = "USER_NOT_FOUND",
+						StatusCode = System.Net.HttpStatusCode.NotFound,
+					};
+				}
+				return new StandardResponse<UserSettingsResponse>()
+				{
+					Data = new UserSettingsResponse()
+					{
+						ColorCardPercent = dbUser.ColorCardPercent,
+						ColorCardThreshold = dbUser.ColorCardThreshold,
+						ShowCardColorInGame = dbUser.ShowCardColorInGame
+					}
+				};
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: AccountService.GetUserSettings({context?.User?.Identity?.Name})");
+				return new StandardResponse<UserSettingsResponse>()
+				{
+					Success = false,
+					Message = "EXCEPTION",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+				};
+			}
+		}
 	}
 }

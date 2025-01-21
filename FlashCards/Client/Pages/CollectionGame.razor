@@ -1,7 +1,9 @@
 ﻿@using FlashCards.Client.Components
+@using FlashCards.Client.Services
 @inject HttpClient _httpClient
 @inject NavigationManager _navManager
 @inject DialogService _dialogService
+@inject UserSettingsService _userSettingsService
 @page "/Collections/{Id}/Game"
 
 @if (_loading)
@@ -73,6 +75,23 @@ else
                         <label>Flipped:</label>
                         <RadzenSwitch @bind-Value=@Flipped />
                     </div>
+                    <div class="inputRangeField">
+                        <label>Accuracy Threshold:</label>
+                        <div class="inputRangeFieldRange">
+                            <RadzenSlider @bind-Value=@PercentThreshold TValue="int" Min="0" Max="100" step="1" />
+                            <div>@($"{@PercentThreshold}%")</div>
+                        </div>
+                    </div>
+                    <div class="inputCheckField">
+                        <label>Include Cards Below Total Threshold:</label>
+                        <RadzenSwitch @bind-Value=@IncludeAllBelowThreshold />
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(_optionsMessage))
+                    {
+                        <div class="error optionsMessage">
+                            @_optionsMessage
+                        </div>
+                    }
                     <button class="positive" @onclick="OnStartClicked">Start</button>
                 </div>
             </div>
@@ -104,7 +123,7 @@ else
             <div class="gameContainer">
                 <div class="gameElementsContainer">
                     <div class="cardListing" @onclick="() => CardClicked(_currentCard.Id)">
-                        <div class="@($"cardValues {(_currentCard.Flipped ? "cardFlipped" : "")}")">
+                        <div class="@($"cardValues {(_currentCard.Flipped ? "cardFlipped" : "")}")" style="@GetCardStyle(_currentCard)">
                             <div class="cardValueContainer">
                                 <div class="@($"cardValue cardFront {(_currentCard.Flipped ? "" : "sideDisplay")}")">
                                     @_currentCard.FrontValue

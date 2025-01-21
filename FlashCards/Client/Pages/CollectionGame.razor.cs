@@ -1,4 +1,5 @@
 ﻿using FlashCards.Client.Models;
+using FlashCards.Client.Util;
 using FlashCards.Shared.Models;
 using FlashCards.Shared.Util;
 using FlashCards.Shared.ViewModels;
@@ -20,8 +21,11 @@ namespace FlashCards.Client.Pages
 		public string Id { get; set; } = string.Empty;
 		private long _id = 0;
 
+		private UserSettingsView _userSettings = new UserSettingsView();
+
 		private bool _loading = true;
 		private string _errorMessage = string.Empty;
+		private string _optionsMessage = string.Empty;
 		private bool _prep = true;
 		private bool _results = false;
 		private int _currentIndex = 0;
@@ -38,6 +42,8 @@ namespace FlashCards.Client.Pages
 		public bool Timer { get; set; }
 		public bool ShowProgress { get; set; }
 		public bool Flipped { get; set; }
+		public int PercentThreshold { get; set; } = 100;
+		public bool IncludeAllBelowThreshold { get; set; } = true;
 
 		protected override async Task OnInitializedAsync()
 		{
@@ -89,9 +95,29 @@ namespace FlashCards.Client.Pages
 			}
 		}
 
+		protected override async Task OnAfterRenderAsync(bool firstRender)
+		{
+			if (firstRender)
+			{
+				_userSettings = await _userSettingsService.GetUserSettings();
+				StateHasChanged();
+			}
+		}
+
 		private void OnStartClicked()
 		{
-			_cards = _sourceCards.Cards.Select(x => new CardViewGame(x)).ToList();
+			_optionsMessage = string.Empty;
+			StateHasChanged();
+			_cards = _sourceCards.Cards.Select(x => new CardViewGame(x))
+				.Where(x => x.PassPercent <= (PercentThreshold / 100.0f) ||
+				(IncludeAllBelowThreshold && (x.PassCount + x.MissCount) < _userSettings.ColorCardThreshold))
+				.ToList();
+			if (_cards.Count == 0)
+			{
+				_optionsMessage = "No valid cards for filter.";
+				StateHasChanged();
+				return;
+			}
 			if (SelectOrderOption == OrderOptionValue.Reverse)
 				_cards.Reverse();
 			if (Shuffle)
@@ -144,6 +170,23 @@ namespace FlashCards.Client.Pages
 			_loading = true;
 			try
 			{
+				foreach (var card in _cards)
+				{
+					var c = _sourceCards.Cards.FirstOrDefault(x => x.Id == card.Id && x.SetId == card.SetId);
+					if (c != null)
+					{
+						if (card.Correct)
+						{
+							c.PassCount++;
+							c.LastPass = DateTime.UtcNow;
+						}
+						else
+						{
+							c.MissCount++;
+							c.LastMiss = DateTime.UtcNow;
+						}
+					}
+				}
 				var putModel = new RecordPlayRequest()
 				{
 					CollectionId = _id,
@@ -204,6 +247,13 @@ namespace FlashCards.Client.Pages
 				StateHasChanged();
 			});
 			_timerInterval?.Start();
+		}
+
+		public string GetCardStyle(CardViewGame card)
+		{
+			if (_userSettings.ShowCardColorInGame)
+				return ClientUtil.GetCardStyle(card, _userSettings);
+			return string.Empty;
 		}
 
 		public void Dispose()
