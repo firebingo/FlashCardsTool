@@ -180,6 +180,74 @@ namespace FlashCards.Server.Services
 			return new StandardResponse();
 		}
 
+		public async Task<StandardResponse> ChangePassword(ChangePasswordRequest request, HttpContext context)
+		{
+			try
+			{
+				if (string.IsNullOrWhiteSpace(request.OldPassword) || string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.NewPasswordConfirm)
+					|| !string.Equals(request.NewPasswordConfirm, request.NewPassword) || string.Equals(request.NewPassword, request.OldPassword))
+				{
+					return new StandardResponse<UserSettingsResponse>()
+					{
+						Success = false,
+						Message = "BAD_PASSWORD_CHANGE_REQUEST",
+						StatusCode = System.Net.HttpStatusCode.BadRequest,
+					};
+				}
+
+				var userIdS = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+				if (!long.TryParse(userIdS, out var userId))
+				{
+					_logger.LogWarning($"Failed to get user claims: AccountService.ChangePassword({context?.User?.Identity?.Name})");
+					return new StandardResponse<UserSettingsResponse>()
+					{
+						Success = false,
+						Message = "ERROR",
+						StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					};
+				}
+
+				var dbUser = (await _dbContext.Users.Where(x => x.Id == userId).ToListAsync()).FirstOrDefault();
+				if (dbUser == null)
+				{
+					_logger.LogWarning($"Failed to get user AccountService.ChangePassword({context?.User?.Identity?.Name})");
+					return new StandardResponse<UserSettingsResponse>()
+					{
+						Success = false,
+						Message = "USER_NOT_FOUND",
+						StatusCode = System.Net.HttpStatusCode.NotFound,
+					};
+				}
+
+				var passwordHash = HashUtil.HashPassword(request.OldPassword, dbUser.Salt);
+				if (passwordHash != dbUser.Password)
+				{
+					return new StandardResponse<UserSettingsResponse>()
+					{
+						Success = false,
+						Message = "BAD_PASSWORD_CHANGE_REQUEST",
+						StatusCode = System.Net.HttpStatusCode.BadRequest,
+					};
+				}
+
+				var newHash = HashUtil.HashPassword(request.NewPassword, dbUser.Salt);
+				dbUser.Password = newHash;
+				await _dbContext.SaveChangesAsync();
+
+				return new StandardResponse();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: AccountService.ChangePassword({context?.User?.Identity?.Name})");
+				return new StandardResponse<UserSettingsResponse>()
+				{
+					Success = false,
+					Message = "EXCEPTION",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+				};
+			}
+		}
+
 		public async Task<StandardResponse<UserSettingsResponse>> GetUserSettings(HttpContext context)
 		{
 			try
@@ -220,6 +288,64 @@ namespace FlashCards.Server.Services
 			{
 				_logger.LogError(ex, $"Exception: AccountService.GetUserSettings({context?.User?.Identity?.Name})");
 				return new StandardResponse<UserSettingsResponse>()
+				{
+					Success = false,
+					Message = "EXCEPTION",
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+				};
+			}
+		}
+
+		public async Task<StandardResponse> UpdateUserSettings(UpdateUserSettingsRequest request, HttpContext context)
+		{
+			try
+			{
+				if (!request.ColorCardThreshold.HasValue &&
+					!request.ColorCardPercent.HasValue &&
+					!request.ShowCardColorInGame.HasValue)
+				{
+					//We have nothing to do
+					return new StandardResponse();
+				}
+
+				var userIdS = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+				if (!long.TryParse(userIdS, out var userId))
+				{
+					_logger.LogWarning($"Failed to update user claims: AccountService.UpdateUserSettings({context?.User?.Identity?.Name})");
+					return new StandardResponse()
+					{
+						Success = false,
+						Message = "ERROR",
+						StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					};
+				}
+				var dbUser = (await _dbContext.UserSettings.Where(x => x.UserId == userId).ToListAsync()).FirstOrDefault();
+				if (dbUser == null)
+				{
+					_logger.LogWarning($"Failed to update user settings: AccountService.UpdateUserSettings({context?.User?.Identity?.Name})");
+					return new StandardResponse()
+					{
+						Success = false,
+						Message = "USER_NOT_FOUND",
+						StatusCode = System.Net.HttpStatusCode.NotFound,
+					};
+				}
+
+				if (request.ShowCardColorInGame.HasValue)
+					dbUser.ShowCardColorInGame = request.ShowCardColorInGame.Value;
+				if (request.ColorCardPercent.HasValue)
+					dbUser.ColorCardPercent = request.ColorCardPercent.Value;
+				if (request.ColorCardThreshold.HasValue)
+					dbUser.ColorCardThreshold = Math.Clamp(request.ColorCardThreshold.Value, 0, 100);
+
+				await _dbContext.SaveChangesAsync();
+
+				return new StandardResponse();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception: AccountService.UpdateUserSettings({context?.User?.Identity?.Name})");
+				return new StandardResponse()
 				{
 					Success = false,
 					Message = "EXCEPTION",

@@ -153,6 +153,27 @@ namespace FlashCards.Server.Controllers
 			}
 		}
 
+		[HttpPatch("[action]")]
+		[Authorize]
+		public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+		{
+			try
+			{
+				var res = await _accountService.ChangePassword(request, HttpContext);
+				return StatusCode((int)res.StatusCode, res);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception in AccountController:ChangePassword({HttpContext.User?.Identity?.Name})");
+				return StatusCode(500, new StandardResponse()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				});
+			}
+		}
+
 		[HttpGet("[action]")]
 		[Authorize]
 		public async Task<IActionResult> GetUserSettings()
@@ -160,6 +181,27 @@ namespace FlashCards.Server.Controllers
 			try
 			{
 				var res = await _accountService.GetUserSettings(HttpContext);
+				return StatusCode((int)res.StatusCode, res);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Exception in AccountController:GetUserSettings({HttpContext.User?.Identity?.Name})");
+				return StatusCode(500, new StandardResponse()
+				{
+					Success = false,
+					StatusCode = System.Net.HttpStatusCode.InternalServerError,
+					Message = "EXCEPTION"
+				});
+			}
+		}
+
+		[HttpPatch("[action]")]
+		[Authorize]
+		public async Task<IActionResult> UpdateUserSettings(UpdateUserSettingsRequest request)
+		{
+			try
+			{
+				var res = await _accountService.UpdateUserSettings(request, HttpContext);
 				return StatusCode((int)res.StatusCode, res);
 			}
 			catch (Exception ex)

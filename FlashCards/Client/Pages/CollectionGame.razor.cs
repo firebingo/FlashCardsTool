@@ -36,6 +36,7 @@ namespace FlashCards.Client.Pages
 		private CardViewGame _currentCard = new CardViewGame();
 		private CardsView _sourceCards = new CardsView();
 		private List<CardViewGame> _cards = [];
+		private int _filteredCount = 0;
 		private List<OrderOption> _orderOptions = [];
 		public OrderOptionValue SelectOrderOption { get; set; }
 		public bool Shuffle { get; set; }
@@ -44,6 +45,7 @@ namespace FlashCards.Client.Pages
 		public bool Flipped { get; set; }
 		public int PercentThreshold { get; set; } = 100;
 		public bool IncludeAllBelowThreshold { get; set; } = true;
+		public bool RepeatMissed { get; set; } = false;
 
 		protected override async Task OnInitializedAsync()
 		{
@@ -87,6 +89,7 @@ namespace FlashCards.Client.Pages
 					return;
 				}
 				_sourceCards = cards.Data;
+				_filteredCount = _sourceCards.Cards.Count;
 			}
 			finally
 			{
@@ -104,14 +107,60 @@ namespace FlashCards.Client.Pages
 			}
 		}
 
+		private void OnAfterFilterChanged()
+		{
+			if (RepeatMissed)
+			{
+				_filteredCount = _cards.Where(x => !x.Correct).Count();
+			}
+			else
+			{
+				if (IncludeAllBelowThreshold)
+				{
+					_filteredCount = _sourceCards.Cards
+					.Where(x => x.PassPercent <= (PercentThreshold / 100.0f) ||
+					(x.PassCount + x.MissCount) < _userSettings.ColorCardThreshold)
+					.Count();
+				}
+				else
+				{
+					_filteredCount = _sourceCards.Cards
+					.Where(x => x.PassPercent <= (PercentThreshold / 100.0f) &&
+					(x.PassCount + x.MissCount) >= _userSettings.ColorCardThreshold)
+					.Count();
+				}
+			}
+			StateHasChanged();
+		}
+
 		private void OnStartClicked()
 		{
 			_optionsMessage = string.Empty;
 			StateHasChanged();
-			_cards = _sourceCards.Cards.Select(x => new CardViewGame(x))
-				.Where(x => x.PassPercent <= (PercentThreshold / 100.0f) ||
-				(IncludeAllBelowThreshold && (x.PassCount + x.MissCount) < _userSettings.ColorCardThreshold))
-				.ToList();
+			if (RepeatMissed)
+			{
+				_cards = _cards.Where(x => !x.Correct)
+					.Select(x => new CardViewGame(_sourceCards.Cards.First(s => s.Id == x.Id && s.SetId == x.SetId)))
+					.ToList();
+			}
+			else
+			{
+				if (IncludeAllBelowThreshold)
+				{
+					_cards = _sourceCards.Cards.Select(x => new CardViewGame(x))
+					.Where(x => x.PassPercent <= (PercentThreshold / 100.0f) ||
+					(IncludeAllBelowThreshold && (x.PassCount + x.MissCount) < _userSettings.ColorCardThreshold))
+					.ToList();
+				}
+				else
+				{
+					_cards = _sourceCards.Cards.Select(x => new CardViewGame(x))
+					.Where(x => x.PassPercent <= (PercentThreshold / 100.0f) &&
+					(x.PassCount + x.MissCount) >= _userSettings.ColorCardThreshold)
+					.ToList();
+				}
+			}
+
 			if (_cards.Count == 0)
 			{
 				_optionsMessage = "No valid cards for filter.";
@@ -236,6 +285,11 @@ namespace FlashCards.Client.Pages
 			}
 			_results = false;
 			_prep = true;
+			if (RepeatMissed && !_cards.Any(x => !x.Correct))
+			{
+				RepeatMissed = false;
+			}
+			OnAfterFilterChanged();
 			StateHasChanged();
 		}
 

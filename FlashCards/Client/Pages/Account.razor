@@ -1,7 +1,107 @@
-﻿@page "/Account"
+﻿@using FlashCards.Client.Components
+@using FlashCards.Client.Services
+@inject HttpClient _httpClient
+@inject UserSettingsService _userSettingsService
+@inject IJSRuntime _jsRuntime
+@page "/Account"
 
-<h3>Account</h3>
-
-@code {
-
+@if (_loading)
+{
+    <div class="loaderFlex">
+        <Loader />
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(_errorMessage))
+{
+    <div class="error">
+        @_errorMessage
+    </div>
+}
+else
+{
+    <div class="accountRootContainer">
+        <div class="accountSettingsBlock">
+            <h3>Account:</h3>
+            <div class="accountSettingsFormContainer">
+                <div class="accountSettingsForm">
+                    <div class="inputField">
+                        <label>Username:</label>
+                        <InputText @bind-Value="_settings.Username" disabled="true" />
+                    </div>
+                    <div class="inputField">
+                        <label>Email:</label>
+                        <InputText @bind-Value="_settings.Email" disabled="true" />
+                    </div>
+                </div>
+            </div>
+            <h4>Change Password:</h4>
+            <div class="accountSettingsFormContainer">
+                <EditForm EditContext="@_passwordEditContext" OnSubmit="@PasswordSubmit" class="accountSettingsForm">
+                    <DataAnnotationsValidator />
+                    <div class="inputField">
+                        <label>Old Password:</label>
+                        <InputText type="password" @bind-Value="PasswordModel!.OldPassword" />
+                        <div class="inputFieldError">
+                            <ValidationMessage For="@(() => PasswordModel!.OldPassword)" />
+                        </div>
+                    </div>
+                    <div class="inputField">
+                        <label>Password:</label>
+                        <InputText type="password" @bind-Value="PasswordModel!.NewPassword" />
+                        <div class="inputFieldError">
+                            <ValidationMessage For="@(() => PasswordModel!.NewPassword)" />
+                        </div>
+                    </div>
+                    <div class="inputField">
+                        <label>Password:</label>
+                        <InputText type="password" @bind-Value="PasswordModel!.NewPasswordConfirm" />
+                        <div class="inputFieldError">
+                            <ValidationMessage For="@(() => PasswordModel!.NewPasswordConfirm)" />
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(_passwordErrorMessage))
+                    {
+                        <div class="error validation-message">@_passwordErrorMessage</div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(_passwordSuccessMessage))
+                    {
+                        <div class="success validation-message">@_passwordSuccessMessage</div>
+                    }
+                    <button type="submit" class="positive" disabled="@(_loadingPasswordChange || !PasswordValid)">Change Password</button>
+                </EditForm>
+            </div>
+        </div>
+        <div class="accountSettingsBlock">
+            <h3>Settings:</h3>
+            <div class="accountSettingsFormContainer">
+                <EditForm EditContext="@_settingsEditContext" OnSubmit="@SettingsSubmit" class="accountSettingsForm">
+                    <DataAnnotationsValidator />
+                    <div class="inputCheckField">
+                        <label>Color cards from accuracy history:</label>
+                        <RadzenSwitch @bind-Value=@SettingsModel!.ColorCardPercent @bind-Value:after="OnSettingsChange" />
+                    </div>
+                    <div class="inputField">
+                        <label>Play count threshold to color cards:</label>
+                        <InputNumber @bind-Value="SettingsModel!.ColorCardThreshold" @bind-Value:after="OnSettingsChange" />
+                        <div class="inputFieldError">
+                            <ValidationMessage For="@(() => SettingsModel!.ColorCardThreshold)" />
+                        </div>
+                    </div>
+                    <div class="inputCheckField">
+                        <label>Show card colors in game:</label>
+                        <RadzenSwitch @bind-Value=@SettingsModel!.ShowCardColorInGame @bind-Value:after="OnSettingsChange" />
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(_settingsErrorMessage))
+                    {
+                        <div class="error validation-message">@_settingsErrorMessage</div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(_settingsSuccessMessage))
+                    {
+                        <div class="success validation-message">@_settingsSuccessMessage</div>
+                    }
+                    <button type="submit" class="positive" disabled="@(_loadingSettingsChange || !_hasSettingsChange)">Save</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
 }

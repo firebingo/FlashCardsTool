@@ -57,17 +57,19 @@ body {
     --base-bg-color: #393939;
     --mid-bg-color: #343434;
     --dark-bg-color: #303030;
+    --dark-bg-color-disabled: #404040;
     --base-border-color: rgba(255,255,255,.2);
     --hover-border-color: rgba(255,255,255,.5);
     --base-link-color: #0096cf;
     --error-color: rgba(210, 0, 0, .8);
+    --success-color: rgba(0, 180, 0, .8);
     --border-radius: 3px;
     --large-border-radius: 7px;
     --input-background: var(--dark-bg-color);
     --input-foreground: var(--base-font-color);
     --input-border-color: #777;
-    --input-background-disabled: transparent;
-    --input-border-color-disabled: transparent;
+    --input-background-disabled: var(--dark-bg-color-disabled);
+    --input-border-color-disabled: #555555;
     --button-primary-background: #181818;
     --button-primary-border: #777;
     --button-primary-shadow-color: #777;
@@ -153,6 +155,10 @@ body {
 .validation-message {
     color: var(--error-color);
 }
+
+    .validation-message.success {
+        color: var(--success-color);
+    }
 
 .error {
     color: var(--error-color);
