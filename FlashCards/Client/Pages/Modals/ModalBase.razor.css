@@ -49,6 +49,14 @@
     margin-right: auto;
 }
 
+::deep .inputCheckField {
+    width: 100%;
+}
+
+    ::deep .inputCheckField .rz-switch {
+       margin-left: auto;
+    }
+
 @media only screen and (max-width: 768px) {
     .baseModal {
         height: 100%;

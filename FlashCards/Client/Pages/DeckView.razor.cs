@@ -262,9 +262,10 @@ namespace FlashCards.Client.Pages
 			_ = Task.Run(async () => await LoadCardsBackground(true));
 		}
 
-		private Task OnDeckEditComplete(string name)
+		private Task OnDeckEditComplete(string name, bool excludeFromStats)
 		{
 			_deck.SetName = name;
+			_deck.ExcludeFromStats = excludeFromStats;
 			StateHasChanged();
 			return Task.CompletedTask;
 		}
@@ -276,7 +277,8 @@ namespace FlashCards.Client.Pages
 				{
 					{ "SetId", _id },
 					{ "Name", _deck.SetName },
-					{ "CompleteCallback", (string name) => OnDeckEditComplete(name) }
+					{ "ExcludeFromStats", _deck.ExcludeFromStats },
+					{ "CompleteCallback", (string name, bool excludeFromStats) => OnDeckEditComplete(name, excludeFromStats) }
 				},
 				new DialogOptions()
 				{

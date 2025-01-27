@@ -45,6 +45,7 @@ namespace FlashCards.Server.Services
 				{
 					Id = 0,
 					SetName = request.Name,
+					ExcludeFromStats = request.ExcludeFromStats ?? false,
 					ModifiedTime = DateTime.UtcNow,
 					UserId = request.UserId,
 					CreatedTime = DateTime.UtcNow
@@ -57,6 +58,7 @@ namespace FlashCards.Server.Services
 					{
 						Id = set.Entity.Id,
 						SetName = set.Entity.SetName,
+						ExcludeFromStats = set.Entity.ExcludeFromStats,
 						ModifiedTime = set.Entity.ModifiedTime
 					}
 				};
@@ -94,7 +96,8 @@ namespace FlashCards.Server.Services
 					Id = set.Id,
 					ModifiedTime = set.ModifiedTime,
 					CardCount = await _dbContext.Card.CountAsync(y => y.SetId == set.Id),
-					SetName = set.SetName
+					SetName = set.SetName,
+					ExcludeFromStats = set.ExcludeFromStats
 				};
 
 				return new StandardResponse<CardSetView>()
@@ -128,7 +131,8 @@ namespace FlashCards.Server.Services
 						Id = set.Id,
 						ModifiedTime = set.ModifiedTime,
 						CardCount = await _dbContext.Card.CountAsync(y => y.SetId == set.Id),
-						SetName = set.SetName
+						SetName = set.SetName,
+						ExcludeFromStats = set.ExcludeFromStats
 					});
 				}
 
@@ -169,6 +173,7 @@ namespace FlashCards.Server.Services
 				if (request.Name.Length > 127)
 					request.Name = request.Name[0..127];
 				set.SetName = request.Name;
+				set.ExcludeFromStats = request.ExcludeFromStats;
 				set.ModifiedTime = DateTime.UtcNow;
 
 				await _dbContext.SaveChangesAsync();
