@@ -19,6 +19,32 @@ content-type: application/json
 
 ###
 
+PATCH https://localhost:7062/api/account/ChangePassword HTTP/1.1
+content-type: application/json
+
+{
+    "oldPassword": "test",
+    "newPassword": "test1",
+    "newPasswordConfirm": "test1"
+}
+
+###
+
+GET https://localhost:7062/api/account/GetUserSettings HTTP/1.1
+
+###
+
+PATCH https://localhost:7062/api/account/UpdateUserSettings HTTP/1.1
+content-type: application/json
+
+{
+    "colorCardPercent": true,
+    "colorCardThreshold": 5,
+    "showCardColorInGame": false
+}
+
+###
+
 PUT https://localhost:7062/api/card/CreateCardSet HTTP/1.1
 content-type: application/json
 
@@ -41,7 +67,8 @@ content-type: application/json
 
 {
     "setId": 1,
-    "name": "testsetedit"
+    "name": "testsetedit",
+    "excludeFromStats": false
 }
 
 ###
