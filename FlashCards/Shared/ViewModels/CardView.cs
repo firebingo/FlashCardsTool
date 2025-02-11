@@ -33,5 +33,20 @@ namespace FlashCards.Shared.ViewModels
 		public bool Loading { get; set; }
 		[JsonIgnore]
 		public float PassPercent { get => (MissCount == 0 && PassCount == 0) ? 1.0f : ((float)PassCount / (PassCount + MissCount)); }
+		[JsonIgnore]
+		public DateTime LastSeenTime
+		{
+			get
+			{
+				if (!LastMiss.HasValue && !LastPass.HasValue)
+					return DateTime.MinValue;
+				else if (LastMiss.HasValue && !LastPass.HasValue)
+					return LastMiss.Value;
+				else if (!LastMiss.HasValue && LastPass.HasValue)
+					return LastPass.Value;
+				else
+					return LastPass > LastMiss ? LastPass.Value : LastMiss!.Value;
+			}
+		}
 	}
 }

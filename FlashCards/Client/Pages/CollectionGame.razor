@@ -80,6 +80,19 @@ else
                         <h4>Filters:</h4>
                         <h4 class="gameOptionsHeaderCount">@($"{_filteredCount}/{_sourceCards.Cards.Count}")</h4>
                     </div>
+                    <div class="inputCheckField">
+                        <label>Last seen time:</label>
+                        <RadzenSwitch @bind-Value=@FilterLastSeen @bind-Value:after="OnAfterFilterChanged" Disabled="@RepeatMissed" />
+                    </div>
+                    <div class="lastSeenInputs">
+                        <select @bind="LastSeenStep" @bind:after="OnAfterFilterChanged" Disabled="@(!FilterLastSeen || RepeatMissed)">
+                            @foreach (var option in _lastSeenStepOptions)
+                            {
+                                <option value="@option.Value">@option.Name</option>
+                            }
+                        </select>
+                        <InputNumber @bind-Value="LastSeenValue" @bind-Value:after="OnAfterFilterChanged" Disabled="@(!FilterLastSeen || RepeatMissed)" min="0" />
+                    </div>
                     <div class="inputRangeField">
                         <label>Accuracy Threshold:</label>
                         <div class="inputRangeFieldRange">

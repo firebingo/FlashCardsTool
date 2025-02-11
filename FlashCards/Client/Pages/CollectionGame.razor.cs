@@ -38,11 +38,15 @@ namespace FlashCards.Client.Pages
 		private List<CardViewGame> _cards = [];
 		private int _filteredCount = 0;
 		private List<OrderOption> _orderOptions = [];
+		private List<LastSeenStepOption> _lastSeenStepOptions = [];
 		public OrderOptionValue SelectOrderOption { get; set; }
 		public bool Shuffle { get; set; }
 		public bool Timer { get; set; }
 		public bool ShowProgress { get; set; }
 		public bool Flipped { get; set; }
+		public bool FilterLastSeen { get; set; } = false;
+		public LastSeenStepOptionValue LastSeenStep { get; set; } = LastSeenStepOptionValue.Day;
+		public int LastSeenValue { get; set; } = 1;
 		public int PercentThreshold { get; set; } = 100;
 		public bool IncludeAllBelowThreshold { get; set; } = true;
 		public bool RepeatMissed { get; set; } = false;
@@ -72,6 +76,30 @@ namespace FlashCards.Client.Pages
 					{
 						Name = "Reverse",
 						Value = OrderOptionValue.Reverse
+					}
+				];
+
+				_lastSeenStepOptions =
+				[
+					new LastSeenStepOption()
+					{
+						Name = "Day(s)",
+						Value = LastSeenStepOptionValue.Day
+					},
+					new LastSeenStepOption()
+					{
+						Name = "Week(s)",
+						Value = LastSeenStepOptionValue.Week
+					},
+					new LastSeenStepOption()
+					{
+						Name = "Month(s)",
+						Value = LastSeenStepOptionValue.Month
+					},
+					new LastSeenStepOption()
+					{
+						Name = "Year(s)",
+						Value = LastSeenStepOptionValue.Year
 					}
 				];
 
@@ -118,6 +146,7 @@ namespace FlashCards.Client.Pages
 				if (IncludeAllBelowThreshold)
 				{
 					_filteredCount = _sourceCards.Cards
+					.Where(x => !FilterLastSeen || x.LastSeenTime < CurrentTimeFilter())
 					.Where(x => x.PassPercent <= (PercentThreshold / 100.0f) ||
 					(x.PassCount + x.MissCount) < _userSettings.ColorCardThreshold)
 					.Count();
@@ -125,6 +154,7 @@ namespace FlashCards.Client.Pages
 				else
 				{
 					_filteredCount = _sourceCards.Cards
+					.Where(x => !FilterLastSeen || x.LastSeenTime < CurrentTimeFilter())
 					.Where(x => x.PassPercent <= (PercentThreshold / 100.0f) &&
 					(x.PassCount + x.MissCount) >= _userSettings.ColorCardThreshold)
 					.Count();
@@ -148,6 +178,7 @@ namespace FlashCards.Client.Pages
 				if (IncludeAllBelowThreshold)
 				{
 					_cards = _sourceCards.Cards.Select(x => new CardViewGame(x))
+					.Where(x => !FilterLastSeen || x.LastSeenTime < CurrentTimeFilter())
 					.Where(x => x.PassPercent <= (PercentThreshold / 100.0f) ||
 					(IncludeAllBelowThreshold && (x.PassCount + x.MissCount) < _userSettings.ColorCardThreshold))
 					.ToList();
@@ -155,6 +186,7 @@ namespace FlashCards.Client.Pages
 				else
 				{
 					_cards = _sourceCards.Cards.Select(x => new CardViewGame(x))
+					.Where(x => !FilterLastSeen || x.LastSeenTime < CurrentTimeFilter())
 					.Where(x => x.PassPercent <= (PercentThreshold / 100.0f) &&
 					(x.PassCount + x.MissCount) >= _userSettings.ColorCardThreshold)
 					.ToList();
@@ -310,6 +342,16 @@ namespace FlashCards.Client.Pages
 			return string.Empty;
 		}
 
+		private DateTime CurrentTimeFilter() =>
+			LastSeenStep switch
+			{
+				LastSeenStepOptionValue.Day => DateTime.UtcNow.AddDays(-LastSeenValue),
+				LastSeenStepOptionValue.Week => DateTime.UtcNow.AddDays(-(LastSeenValue * 7)),
+				LastSeenStepOptionValue.Month => DateTime.UtcNow.AddMonths(-LastSeenValue),
+				LastSeenStepOptionValue.Year => DateTime.UtcNow.AddYears(-LastSeenValue),
+				_ => DateTime.UtcNow.AddDays(-LastSeenValue)
+			};
+
 		public void Dispose()
 		{
 			try
@@ -335,6 +377,20 @@ namespace FlashCards.Client.Pages
 		{
 			Normal,
 			Reverse
+		}
+
+		private class LastSeenStepOption
+		{
+			public LastSeenStepOptionValue Value { get; set; }
+			public string Name { get; set; } = string.Empty;
+		}
+
+		public enum LastSeenStepOptionValue
+		{
+			Day,
+			Week,
+			Month,
+			Year
 		}
 	}
 }

@@ -13,6 +13,8 @@ namespace FlashCards.Client.Models
 		public bool Correct { get; set; }
 		public int PassCount { get; set; }
 		public int MissCount { get; set; }
+		public DateTime? LastMiss { get; set; }
+		public DateTime? LastPass { get; set; }
 		public bool CardSetExcludeStats { get; set; }
 		public DateTime StartTime { get; set; }
 		public DateTime EndTime { get; set; }
@@ -21,6 +23,20 @@ namespace FlashCards.Client.Models
 			get => EndTime - StartTime;
 		}
 		public float PassPercent { get => (MissCount == 0 && PassCount == 0) ? 1.0f : ((float)PassCount / (PassCount + MissCount)); }
+		public DateTime LastSeenTime
+		{
+			get
+			{
+				if (!LastMiss.HasValue && !LastPass.HasValue)
+					return DateTime.MinValue;
+				else if (LastMiss.HasValue && !LastPass.HasValue)
+					return LastMiss.Value;
+				else if (!LastMiss.HasValue && LastPass.HasValue)
+					return LastPass.Value;
+				else
+					return LastPass > LastMiss ? LastPass.Value : LastMiss!.Value;
+			}
+		}
 
 		public CardViewGame()
 		{
@@ -36,6 +52,8 @@ namespace FlashCards.Client.Models
 			PassCount = card.PassCount;
 			MissCount = card.MissCount;
 			CardSetExcludeStats = card.CardSetExcludeStats;
+			LastMiss = card.LastMiss;
+			LastPass = card.LastPass;
 		}
 	}
 }
