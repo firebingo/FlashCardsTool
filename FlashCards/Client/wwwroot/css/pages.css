@@ -43,6 +43,22 @@
         margin-left: 10px;
     }
 
+h4.gameOptionsHeader {
+    margin: 8px 0;
+}
+
+.gameOptionsHeader {
+    display: flex;
+}
+
+    .gameOptionsHeader h4 {
+        margin: 8px 0;
+    }
+
+    .gameOptionsHeader .gameOptionsHeaderCount {
+        margin-left: auto;
+    }
+
 .prepContainer {
     height: 100%;
     width: 100%;
@@ -99,5 +115,9 @@
 @media only screen and (max-width: 768px) {
     .contentContainer {
         overflow: auto;
+    }
+
+    .gameHeader.gameHeaderPrep {
+        display: none;
     }
 }

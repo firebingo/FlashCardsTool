@@ -17,6 +17,10 @@
                     <ValidationMessage For="@(() => _formModel!.Name)" />
                 </div>
             </div>
+            <div class="inputCheckField">
+                <label>Exclude from stats:</label>
+                <RadzenSwitch @bind-Value=@_formModel!.ExcludeFromStats />
+            </div>
         </EditForm>
         @if (!string.IsNullOrWhiteSpace(_error))
         {
@@ -60,7 +64,8 @@
         _error = string.Empty;
         var postModel = new CreateCardSetRequest()
             {
-                Name = _formModel!.Name
+                Name = _formModel!.Name,
+                ExcludeFromStats = _formModel.ExcludeFromStats
             };
         using var content = new StringContent(JsonSerializer.Serialize(postModel, DefaultJsonOptions.DefaultOptions), Encoding.UTF8, "application/json");
         using var res = await _httpClient.PutAsync("/api/card/CreateCardSet", content);
@@ -95,5 +100,7 @@
         [Required(ErrorMessage = "Required")]
         [StringLength(128, ErrorMessage = "Max length of 128")]
         public string Name { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Required")]
+        public bool ExcludeFromStats { get; set; }
     }
 }

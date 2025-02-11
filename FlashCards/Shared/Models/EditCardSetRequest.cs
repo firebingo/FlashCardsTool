@@ -8,5 +8,6 @@ namespace FlashCards.Shared.Models
 		[JsonIgnore]
 		public long UserId { get; set; }
 		public string Name { get; set; } = string.Empty;
+		public bool ExcludeFromStats { get; set; }
 	}
 }

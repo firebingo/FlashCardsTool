@@ -1,7 +1,10 @@
 ﻿@using FlashCards.Client.Components
+@using FlashCards.Client.Services
+@using FlashCards.Client.Util
 @inject HttpClient _httpClient
 @inject NavigationManager _navManager
 @inject DialogService _dialogService
+@inject UserSettingsService _userSettingsService
 @page "/Decks/{Id}"
 
 @if (_loading)
@@ -61,7 +64,7 @@ else
                             <div class="cardEditIcon" @onclick="() => EditClicked(card.Id)" @onclick:stopPropagation="true">
                                 <span class="symbol">edit_note</span>
                             </div>
-                            <div class="@($"cardValues {(card.Flipped ? "cardFlipped" : "")}")">
+                            <div class="@($"cardValues {(card.Flipped ? "cardFlipped" : "")}")" style="@ClientUtil.GetCardStyle(card, _userSettings)">
                                 <div class="cardValueContainer">
                                     <div class="@($"cardValue cardFront {(card.Flipped ? "" : "sideDisplay")}")">
                                         @card.FrontValue

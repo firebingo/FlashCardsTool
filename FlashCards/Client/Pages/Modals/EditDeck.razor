@@ -17,6 +17,10 @@
                     <ValidationMessage For="@(() => _formModel!.Name)" />
                 </div>
             </div>
+            <div class="inputCheckField">
+                <label>Exclude from stats:</label>
+                <RadzenSwitch @bind-Value=@_formModel!.ExcludeFromStats />
+            </div>
         </EditForm>
         @if (!string.IsNullOrWhiteSpace(_error))
         {
@@ -36,7 +40,9 @@
     [Parameter]
     public string Name { get; set; } = string.Empty;
     [Parameter]
-    public Func<string, Task>? CompleteCallback { get; set; }
+    public bool ExcludeFromStats { get; set; }
+    [Parameter]
+    public Func<string, bool, Task>? CompleteCallback { get; set; }
 
     EditContext? _editContext;
     FormModel? _formModel { get; set; }
@@ -47,6 +53,7 @@
     {
         _formModel ??= new FormModel();
         _formModel.Name = Name;
+        _formModel.ExcludeFromStats = ExcludeFromStats;
         _editContext = new EditContext(_formModel);
     }
 
@@ -66,7 +73,8 @@
         var postModel = new EditCardSetRequest()
             {
                 SetId = SetId,
-                Name = _formModel!.Name
+                Name = _formModel!.Name,
+                ExcludeFromStats = _formModel.ExcludeFromStats
             };
         using var content = new StringContent(JsonSerializer.Serialize(postModel, DefaultJsonOptions.DefaultOptions), Encoding.UTF8, "application/json");
         using var res = await _httpClient.PatchAsync("/api/card/EditCardSet", content);
@@ -88,7 +96,7 @@
         _loading = false;
         _dialogService.Close();
         if (CompleteCallback != null)
-            await CompleteCallback(_formModel!.Name);
+            await CompleteCallback(_formModel!.Name, _formModel.ExcludeFromStats);
     }
 
     void OnClose()
@@ -101,5 +109,7 @@
         [Required(ErrorMessage = "Required")]
         [StringLength(128, ErrorMessage = "Max length of 128")]
         public string Name { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Required")]
+        public bool ExcludeFromStats { get; set; }
     }
 }

@@ -1,0 +1,86 @@
+﻿.accountRootContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.accountSettingsBlock:not(:first-child) {
+    margin-left: 40px;
+}
+
+.accountSettingsBlock {
+    display: flex;
+    flex-direction: column;
+}
+
+::deep .accountSettingsForm {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+    ::deep .accountSettingsForm button {
+        margin: auto;
+    }
+
+    ::deep .accountSettingsForm .error.validation-message {
+        margin: auto auto 6px auto;
+        text-align: center;
+    }
+
+    ::deep .accountSettingsForm .success.validation-message {
+        margin: auto auto 6px auto;
+        text-align: center;
+    }
+
+    .inputField {
+        width: 100%;
+    }
+
+.inputCheckField {
+    padding: 4px 4px 4px 0;
+    width: 100%;
+}
+
+    .inputCheckField ::deep .rz-switch {
+        margin-left: auto;
+    }
+
+@media only screen and (min-width: 768px) {
+    .accountSettingsBlock {
+        width: 300px;
+        min-width: 300px;
+    }
+
+    .accountSettingsBlock h3 {
+        margin-top: 0;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .accountSettingsBlock:not(:first-child) {
+        margin: auto;
+    }
+
+    .accountSettingsBlock:last-child {
+        padding-bottom: 24px;
+    }
+
+    .accountSettingsBlock {
+        align-items: center;
+        margin: auto;
+        width: 100%;
+    }
+
+        .accountSettingsBlock:first-child h3 {
+            margin-top: 0;
+        }
+
+    ::deep .accountSettingsForm {
+        width: 100%;
+    }
+
+    .accountSettingsFormContainer {
+        width: 90%;
+    }
+}

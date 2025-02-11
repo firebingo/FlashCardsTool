@@ -10,18 +10,55 @@
         margin-left: auto;
     }
 
-    .cardListing {
-        width: 320px;
-        height: 200px;
-        background-color: var(--base-bg-color);
-        display: flex;
-        position: relative;
-        cursor: pointer;
-    }
+.cardListing {
+    width: 320px;
+    height: 200px;
+    background-color: var(--base-bg-color);
+    display: flex;
+    position: relative;
+    cursor: pointer;
+}
 
     .cardListing:hover .cardValues {
         border-color: var(--hover-border-color);
     }
+
+.inputRangeField {
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+}
+
+    .inputRangeField .inputRangeFieldRange {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+        .inputRangeField .inputRangeFieldRange ::deep .rz-slider {
+            width: 100%;
+            margin: 0 10px;
+        }
+
+        .inputRangeField .inputRangeFieldRange div {
+            text-align: end;
+            min-width: 2.6rem;
+            margin-left: 8px;
+        }
+
+.lastSeenInputs {
+    display: flex;
+}
+
+    .lastSeenInputs ::deep input {
+        width: 70px;
+        margin-left: 8px;
+    }
+
+.optionsMessage {
+    text-align: center;
+    margin-bottom: 6px;
+}
 
 .cardValues {
     border: 1px solid var(--base-border-color);

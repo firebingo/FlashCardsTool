@@ -17,6 +17,7 @@ namespace FlashCards.Client.Pages
 		private string _errorMessage = string.Empty;
 		private CardCollectionView _collection = new CardCollectionView();
 		private CardsView _cards = new CardsView();
+		private UserSettingsView _userSettings = new UserSettingsView();
 
 		[Parameter]
 		public string Id { get; set; } = string.Empty;
@@ -39,10 +40,13 @@ namespace FlashCards.Client.Pages
 		{
 			if (firstRender)
 			{
+				var userSettingsTask = _userSettingsService.GetUserSettings();
 				var res = await LoadCollectionView();
 				if (!res)
 					return;
 				await LoadCards();
+				_userSettings = await userSettingsTask;
+				StateHasChanged();
 			}
 		}
 

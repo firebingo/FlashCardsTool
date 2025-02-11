@@ -1,7 +1,9 @@
 ﻿@using FlashCards.Client.Components
+@using FlashCards.Client.Services
 @inject HttpClient _httpClient
 @inject NavigationManager _navManager
 @inject DialogService _dialogService
+@inject UserSettingsService _userSettingsService
 @page "/Collections/{Id}/Game"
 
 @if (_loading)
@@ -13,7 +15,7 @@
 else
 {
     <div class="gameRootContainer">
-        <div class="gameHeader">
+        <div class="@($"gameHeader{(!_prep ? "" : " gameHeaderPrep")}")">
             @if (!_prep && !_results)
             {
                 <button class="negative" @onclick="OnCancelClicked" disabled="@(_loading || !string.IsNullOrWhiteSpace(_errorMessage))">Stop</button>
@@ -57,6 +59,7 @@ else
                             }
                         </select>
                     </div>
+                    <h4 class="gameOptionsHeader">Options:</h4>
                     <div class="inputCheckField">
                         <label>Shuffle:</label>
                         <RadzenSwitch @bind-Value=@Shuffle />
@@ -73,6 +76,44 @@ else
                         <label>Flipped:</label>
                         <RadzenSwitch @bind-Value=@Flipped />
                     </div>
+                    <div class="gameOptionsHeader">
+                        <h4>Filters:</h4>
+                        <h4 class="gameOptionsHeaderCount">@($"{_filteredCount}/{_sourceCards.Cards.Count}")</h4>
+                    </div>
+                    <div class="inputCheckField">
+                        <label>Last seen time:</label>
+                        <RadzenSwitch @bind-Value=@FilterLastSeen @bind-Value:after="OnAfterFilterChanged" Disabled="@RepeatMissed" />
+                    </div>
+                    <div class="lastSeenInputs">
+                        <select @bind="LastSeenStep" @bind:after="OnAfterFilterChanged" Disabled="@(!FilterLastSeen || RepeatMissed)">
+                            @foreach (var option in _lastSeenStepOptions)
+                            {
+                                <option value="@option.Value">@option.Name</option>
+                            }
+                        </select>
+                        <InputNumber @bind-Value="LastSeenValue" @bind-Value:after="OnAfterFilterChanged" Disabled="@(!FilterLastSeen || RepeatMissed)" min="0" />
+                    </div>
+                    <div class="inputRangeField">
+                        <label>Accuracy Threshold:</label>
+                        <div class="inputRangeFieldRange">
+                            <RadzenSlider @bind-Value=@PercentThreshold TValue="int" Min="0" Max="100" step="1" @bind-Value:after="OnAfterFilterChanged" Disabled="@RepeatMissed" />
+                            <div>@($"{@PercentThreshold}%")</div>
+                        </div>
+                    </div>
+                    <div class="inputCheckField">
+                        <label>Include Cards Below Total Threshold:</label>
+                        <RadzenSwitch @bind-Value=@IncludeAllBelowThreshold @bind-Value:after="OnAfterFilterChanged" Disabled="@RepeatMissed" />
+                    </div>
+                    <div class="inputCheckField">
+                        <label>Replay Missed Cards:</label>
+                        <RadzenSwitch @bind-Value=@RepeatMissed @bind-Value:after="OnAfterFilterChanged" Disabled="@(_cards.Where(x => !x.Correct).Count() == 0)"/>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(_optionsMessage))
+                    {
+                        <div class="error optionsMessage">
+                            @_optionsMessage
+                        </div>
+                    }
                     <button class="positive" @onclick="OnStartClicked">Start</button>
                 </div>
             </div>
@@ -104,7 +145,7 @@ else
             <div class="gameContainer">
                 <div class="gameElementsContainer">
                     <div class="cardListing" @onclick="() => CardClicked(_currentCard.Id)">
-                        <div class="@($"cardValues {(_currentCard.Flipped ? "cardFlipped" : "")}")">
+                        <div class="@($"cardValues {(_currentCard.Flipped ? "cardFlipped" : "")}")" style="@GetCardStyle(_currentCard)">
                             <div class="cardValueContainer">
                                 <div class="@($"cardValue cardFront {(_currentCard.Flipped ? "" : "sideDisplay")}")">
                                     @_currentCard.FrontValue

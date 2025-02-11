@@ -1,3 +1,4 @@
+using FlashCards.Client.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ namespace FlashCards.Client
 
 			builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 			builder.Services.AddScoped<DialogService>();
+			builder.Services.AddScoped<UserSettingsService>();
 
 			await builder.Build().RunAsync();
 		}

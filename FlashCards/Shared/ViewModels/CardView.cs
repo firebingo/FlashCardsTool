@@ -19,6 +19,11 @@ namespace FlashCards.Shared.ViewModels
 		public long SetId { get; set; }
 		public string? FrontValue { get; set; }
 		public string? BackValue { get; set; }
+		public int PassCount { get; set; }
+		public int MissCount { get; set; }
+		public DateTime? LastPass { get; set; }
+		public DateTime? LastMiss { get; set; }
+		public bool CardSetExcludeStats { get; set; }
 		public DateTime ModifiedTime { get; set; }
 		[JsonIgnore]
 		public bool Flipped { get; set; }
@@ -26,5 +31,22 @@ namespace FlashCards.Shared.ViewModels
 		public bool DeleteConfirm { get; set; }
 		[JsonIgnore]
 		public bool Loading { get; set; }
+		[JsonIgnore]
+		public float PassPercent { get => (MissCount == 0 && PassCount == 0) ? 1.0f : ((float)PassCount / (PassCount + MissCount)); }
+		[JsonIgnore]
+		public DateTime LastSeenTime
+		{
+			get
+			{
+				if (!LastMiss.HasValue && !LastPass.HasValue)
+					return DateTime.MinValue;
+				else if (LastMiss.HasValue && !LastPass.HasValue)
+					return LastMiss.Value;
+				else if (!LastMiss.HasValue && LastPass.HasValue)
+					return LastPass.Value;
+				else
+					return LastPass > LastMiss ? LastPass.Value : LastMiss!.Value;
+			}
+		}
 	}
 }

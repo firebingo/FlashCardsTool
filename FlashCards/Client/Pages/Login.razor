@@ -3,6 +3,7 @@
 @using System.Text.Json;
 @inject HttpClient _httpClient
 @inject NavigationManager _navManager
+@inject IJSRuntime _jsRuntime
 @page "/Login"
 
 <div class="loginContainer">
@@ -58,6 +59,18 @@
         CanRegister = regInfo?.Success ?? false;
         Model ??= new LoginFormModel();
         _editContext = new EditContext(Model);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await _jsRuntime.InvokeVoidAsync("clearLocalStorageCacheItem", "usersettings");
+            }
+            catch { }
+        }
     }
 
     private async Task Submit()
