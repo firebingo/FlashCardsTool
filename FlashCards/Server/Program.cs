@@ -17,6 +17,7 @@ using NLog.Extensions.Logging;
 using NLog.Targets;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -91,8 +92,14 @@ namespace FlashCards
 			builder.Services.AddScoped<CollectionService>();
 			builder.Services.AddScoped<PlayStatsService>();
 			builder.Services.AddScoped<CookieAuthEvents>();
+			builder.Services.AddScoped<IndexService>();
+			builder.Services.AddSingleton<IndexQueueService>();
+			builder.Services.AddHostedService<IndexManagerService>();
 
 			var app = builder.Build();
+
+			AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(app.Environment.ContentRootPath, "AppData"));
+			Directory.CreateDirectory($"{AppDomain.CurrentDomain.GetData("DataDirectory")}\\Index");
 
 			using (var serviceScope = app.Services.GetService<IServiceScopeFactory>()!.CreateScope())
 			{

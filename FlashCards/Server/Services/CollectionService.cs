@@ -16,11 +16,13 @@ namespace FlashCards.Server.Services
 	{
 		readonly ILogger<CollectionService> _logger;
 		readonly ServiceDbContext _dbContext;
+		readonly IndexQueueService _indexQueueService;
 
-		public CollectionService(ILogger<CollectionService> logger, ServiceDbContext dbContext)
+		public CollectionService(ILogger<CollectionService> logger, ServiceDbContext dbContext, IndexQueueService indexQueueService)
 		{
 			_logger = logger;
 			_dbContext = dbContext;
+			_indexQueueService = indexQueueService;
 		}
 
 		public async Task<StandardResponse<CardCollectionView>> CreateCardCollection(CreateCardCollectionRequest request)
@@ -51,6 +53,7 @@ namespace FlashCards.Server.Services
 				});
 
 				await _dbContext.SaveChangesAsync();
+				_indexQueueService.QueueIndex(request.UserId);
 				return new StandardResponse<CardCollectionView>()
 				{
 					Data = new CardCollectionView()
@@ -204,6 +207,7 @@ namespace FlashCards.Server.Services
 				collection.ModifiedTime = DateTime.UtcNow;
 
 				await _dbContext.SaveChangesAsync();
+				_indexQueueService.QueueIndex(request.UserId);
 
 				return new StandardResponse();
 			}
@@ -237,6 +241,7 @@ namespace FlashCards.Server.Services
 
 				_dbContext.CardCollection.Remove(collection);
 				await _dbContext.SaveChangesAsync();
+				_indexQueueService.QueueIndex(userId);
 
 				return new StandardResponse();
 			}
@@ -297,6 +302,7 @@ namespace FlashCards.Server.Services
 				{
 					_dbContext.CardCollectionSets.AddRange(newCollectionSets);
 					await _dbContext.SaveChangesAsync();
+					_indexQueueService.QueueIndex(request.UserId);
 				}
 
 				return new StandardResponse<List<long>>()
@@ -349,6 +355,7 @@ namespace FlashCards.Server.Services
 				{
 					_dbContext.CardCollectionSets.RemoveRange(collectionSets);
 					await _dbContext.SaveChangesAsync();
+					_indexQueueService.QueueIndex(request.UserId);
 				}
 
 				return new StandardResponse<List<long>>()

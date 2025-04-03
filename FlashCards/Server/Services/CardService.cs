@@ -16,11 +16,13 @@ namespace FlashCards.Server.Services
 	{
 		readonly ILogger<CardService> _logger;
 		readonly ServiceDbContext _dbContext;
+		readonly IndexQueueService _indexQueueService;
 
-		public CardService(ILogger<CardService> logger, ServiceDbContext dbContext)
+		public CardService(ILogger<CardService> logger, ServiceDbContext dbContext, IndexQueueService indexQueueService)
 		{
 			_logger = logger;
 			_dbContext = dbContext;
+			_indexQueueService = indexQueueService;
 		}
 
 		public async Task<StandardResponse<CardSetView>> CreateCardSet(CreateCardSetRequest request)
@@ -52,6 +54,7 @@ namespace FlashCards.Server.Services
 				});
 
 				await _dbContext.SaveChangesAsync();
+				_indexQueueService.QueueIndex(request.UserId);
 				return new StandardResponse<CardSetView>()
 				{
 					Data = new CardSetView()
@@ -177,6 +180,7 @@ namespace FlashCards.Server.Services
 				set.ModifiedTime = DateTime.UtcNow;
 
 				await _dbContext.SaveChangesAsync();
+				_indexQueueService.QueueIndex(request.UserId);
 
 				return new StandardResponse();
 			}
@@ -210,6 +214,7 @@ namespace FlashCards.Server.Services
 
 				_dbContext.CardSet.Remove(set);
 				await _dbContext.SaveChangesAsync();
+				_indexQueueService.QueueIndex(userId);
 
 				return new StandardResponse();
 			}
@@ -264,6 +269,7 @@ namespace FlashCards.Server.Services
 
 				await _dbContext.Card.AddRangeAsync(newCards);
 				await _dbContext.SaveChangesAsync();
+				_indexQueueService.QueueIndex(request.UserId);
 				var ret = new CardsView()
 				{
 					SetId = cardSet.Id,
@@ -397,6 +403,7 @@ namespace FlashCards.Server.Services
 				}
 
 				await _dbContext.SaveChangesAsync();
+				_indexQueueService.QueueIndex(request.UserId);
 				return new StandardResponse<CardsView>()
 				{
 					Data = new CardsView()
@@ -437,6 +444,7 @@ namespace FlashCards.Server.Services
 				var deleteCards = set.Cards.IntersectBy(request.Cards.Select(x => x.Id), x => x.Id);
 				_dbContext.RemoveRange(deleteCards);
 				await _dbContext.SaveChangesAsync();
+				_indexQueueService.QueueIndex(request.UserId);
 				return new StandardResponse();
 			}
 			catch (Exception ex)
