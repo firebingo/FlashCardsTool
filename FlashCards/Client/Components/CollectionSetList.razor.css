@@ -21,16 +21,21 @@
         margin-bottom: 0;
     }
 
-.collectionSetListInner {
-    border: 1px solid var(--base-border-color);
-    border-radius: var(--border-radius);
-    padding: 6px;
-    max-height: 350px;
-    overflow: auto;
-    min-height: 100px;
-    display: flex;
-    flex-direction: column;
-}
+    .collectionSetList ::deep .rz-multiselect-header {
+        padding: 0;
+        margin: 0;
+    }
+
+    .collectionSetListInner {
+        border: 1px solid var(--base-border-color);
+        border-radius: var(--border-radius);
+        padding: 6px;
+        max-height: 350px;
+        overflow: auto;
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+    }
 
     .collectionSetListInner .loaderFlex {
         margin: auto;

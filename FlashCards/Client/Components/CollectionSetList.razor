@@ -11,7 +11,7 @@
         }
         else
         {
-            <RadzenCheckBoxList Data="@Decks" Value="@Selected" ValueChanged="@OnListChanged" TValue="long" TextProperty="SetName" ValueProperty="Id" Orientation="Orientation.Vertical" />
+            <RadzenCheckBoxList Data="@Decks" Value="@Selected" ValueChanged="@OnListChanged" TValue="long" TextProperty="SetName" ValueProperty="Id" Orientation="Orientation.Vertical" AllowSelectAll="@AllowSelectAll" SelectAllText="@SelectAllText" />
         }
     </div>
 </div>
@@ -25,6 +25,10 @@
     public EventCallback<IEnumerable<long>> SelectedChanged { get; set; }
     [Parameter]
     public bool Loading { get; set; } = false;
+    [Parameter]
+    public bool AllowSelectAll { get; set; } = false;
+    [Parameter]
+    public string SelectAllText { get; set; } = string.Empty;
 
     async void OnListChanged(IEnumerable<long> e)
     {

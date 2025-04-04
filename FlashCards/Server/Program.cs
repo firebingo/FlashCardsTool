@@ -90,6 +90,7 @@ namespace FlashCards
 			builder.Services.AddScoped<CardService>();
 			builder.Services.AddScoped<CollectionService>();
 			builder.Services.AddScoped<PlayStatsService>();
+			builder.Services.AddScoped<ExportService>();
 			builder.Services.AddScoped<CookieAuthEvents>();
 
 			var app = builder.Build();

@@ -1,4 +1,5 @@
 ﻿using FlashCards.Client.Components;
+using FlashCards.Client.Pages.Modals;
 using FlashCards.Shared.Models;
 using FlashCards.Shared.Models.Auth;
 using FlashCards.Shared.Util;
@@ -6,6 +7,7 @@ using FlashCards.Shared.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
+using Radzen;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
 using System.Text;
@@ -204,6 +206,18 @@ namespace FlashCards.Client.Pages
 				_settingsSuccessMessage = string.Empty;
 				StateHasChanged();
 			});
+		}
+
+		private async Task ExportDecks()
+		{
+			await _dialogService.OpenAsync<ExportDecks>("ExportDecks",
+				[],
+				new DialogOptions()
+				{
+					ShowTitle = false,
+					ShowClose = false,
+					CloseDialogOnOverlayClick = true
+				});
 		}
 
 		public class AccountPagePasswordForm()

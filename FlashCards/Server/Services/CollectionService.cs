@@ -268,7 +268,7 @@ namespace FlashCards.Server.Services
 					};
 				}
 
-				var cardSets = await _dbContext.CardSet.Where(x => EF.Constant(request.SetIds).Contains(x.Id)).ToListAsync();
+				var cardSets = await _dbContext.CardSet.Where(x => x.UserId == request.UserId && EF.Constant(request.SetIds).Contains(x.Id)).ToListAsync();
 				if (cardSets.Count == 0)
 				{
 					return new StandardResponse<List<long>>()
@@ -332,7 +332,7 @@ namespace FlashCards.Server.Services
 					};
 				}
 
-				var cardSets = await _dbContext.CardSet.Where(x => EF.Constant(request.SetIds).Contains(x.Id)).ToListAsync();
+				var cardSets = await _dbContext.CardSet.Where(x => x.UserId == request.UserId && EF.Constant(request.SetIds).Contains(x.Id)).ToListAsync();
 				if (cardSets.Count == 0)
 				{
 					return new StandardResponse<List<long>>()

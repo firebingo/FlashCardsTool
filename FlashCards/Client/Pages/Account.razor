@@ -2,6 +2,7 @@
 @using FlashCards.Client.Services
 @inject HttpClient _httpClient
 @inject UserSettingsService _userSettingsService
+@inject DialogService _dialogService
 @inject IJSRuntime _jsRuntime
 @page "/Account"
 
@@ -101,6 +102,12 @@ else
                     }
                     <button type="submit" class="positive" disabled="@(_loadingSettingsChange || !_hasSettingsChange)">Save</button>
                 </EditForm>
+            </div>
+        </div>
+        <div class="accountSettingsBlock">
+            <h3>Export:</h3>
+            <div class="exportFormContainer">
+                <button class="positive" @onclick="ExportDecks">Export Decks</button>
             </div>
         </div>
     </div>
