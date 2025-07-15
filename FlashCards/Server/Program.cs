@@ -128,7 +128,7 @@ namespace FlashCards
 				app.UseHsts();
 			}
 
-			app.UseHttpsRedirection();
+			//app.UseHttpsRedirection();
 
 			if (!Debugger.IsAttached)
 			{
