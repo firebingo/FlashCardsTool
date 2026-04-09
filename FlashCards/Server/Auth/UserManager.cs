@@ -26,7 +26,12 @@ namespace FlashCards.Server.Auth
 
 		public async Task<bool> SignIn(HttpContext httpContext, LoginRequest user)
 		{
-			var dbUser = (await _dbContext.Users.Where(x => (x.UserName == user.UserName || x.Email == user.Email)).ToListAsync()).FirstOrDefault();
+			User? dbUser = null;
+			if (!string.IsNullOrWhiteSpace(user.Email))
+				dbUser = (await _dbContext.Users.Where(x => x.Email == user.Email).ToListAsync()).FirstOrDefault();
+			else if (!string.IsNullOrWhiteSpace(user.UserName))
+				dbUser = (await _dbContext.Users.Where(x => x.UserName == user.UserName).ToListAsync())
+					.FirstOrDefault();
 
 			if (dbUser?.Disabled ?? true)
 			{
@@ -41,15 +46,15 @@ namespace FlashCards.Server.Auth
 				return false;
 			}
 
-			ClaimsIdentity identity = new ClaimsIdentity(GetUserClaims(dbUser), CookieAuthenticationDefaults.AuthenticationScheme);
+			ClaimsIdentity identity =
+				new ClaimsIdentity(GetUserClaims(dbUser), CookieAuthenticationDefaults.AuthenticationScheme);
 			ClaimsPrincipal principal = new ClaimsPrincipal(identity);
 
-			await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties()
-			{
-				ExpiresUtc = DateTime.UtcNow.AddDays(3),
-				IsPersistent = true,
-				AllowRefresh = true
-			});
+			await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
+				new AuthenticationProperties()
+				{
+					ExpiresUtc = DateTime.UtcNow.AddDays(3), IsPersistent = true, AllowRefresh = true
+				});
 			return true;
 		}
 
@@ -72,10 +77,7 @@ namespace FlashCards.Server.Auth
 
 		private static List<Claim> GetUserRoleClaims(User user)
 		{
-			var claims = new List<Claim>
-			{
-				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-			};
+			var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) };
 			//claims.Add(new Claim(ClaimTypes.Role, user.UserPermissionType.ToString()));
 			return claims;
 		}
