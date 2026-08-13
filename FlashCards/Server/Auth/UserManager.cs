@@ -8,20 +8,23 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using FlashCards.Server.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace FlashCards.Server.Auth
 {
 	public class UserManager
 	{
 		readonly ServiceDbContext _dbContext;
+		readonly AppSettings _appSettings;
 
-		public UserManager(ServiceDbContext dbContext)
+		public UserManager(IOptions<AppSettings> appSettings, ServiceDbContext dbContext)
 		{
 			_dbContext = dbContext;
+			_appSettings = appSettings.Value;
 		}
 
 		public async Task<bool> SignIn(HttpContext httpContext, LoginRequest user)
@@ -53,7 +56,7 @@ namespace FlashCards.Server.Auth
 			await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
 				new AuthenticationProperties()
 				{
-					ExpiresUtc = DateTime.UtcNow.AddDays(3), IsPersistent = true, AllowRefresh = true
+					ExpiresUtc = DateTime.UtcNow.AddMinutes(_appSettings.UserSettings.CookieLifeTimeMinutes), IsPersistent = true, AllowRefresh = true
 				});
 			return true;
 		}

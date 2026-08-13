@@ -33,6 +33,7 @@ namespace FlashCards.Server.Configuration
 		public int IdGenId { get; set; } = 0;
 		public bool RequireEmail { get; set; } = false;
 		public bool RegistrationOpen { get; set; } = true;
+		public int CookieLifeTimeMinutes { get; set; } = 10080;
 	}
 
 	public class LogSettings
